@@ -346,6 +346,28 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(87, 6, 140, 0.3);
         }
+
+        /* Hover tooltips for extra guidance */
+.upload-icon::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.file-input-container:hover .upload-icon::after {
+    opacity: 1;
+}
         
         .error {
             background-color: #fce8ea;
@@ -1849,11 +1871,12 @@
             <h1>u even revise, bro?</h1>
         </div>
        <!-- Replace the existing header-buttons div with this: -->
-<div class="header-buttons">
-    <button class="about-btn" id="aboutButton">About</button>
-    <button class="about-btn" id="clearDataButton" style="background: #dc3545; border-color: #dc3545; color: white;">Clear Data</button>
-    <button class="new-comparison-btn hidden" id="headerNewComparisonBtn">New Comparison</button>
-</div>
+       <div class="header-buttons">
+        <button class="about-btn" id="aboutButton">About</button>
+        <button class="about-btn" id="restartLandingTourBtn">Take Tour</button>
+        <button class="about-btn" id="clearDataButton" style="background: #dc3545; border-color: #dc3545; color: white;">Clear Data</button>
+        <button class="new-comparison-btn hidden" id="headerNewComparisonBtn">New Comparison</button>
+    </div>
     </header>
 
     
@@ -3046,6 +3069,24 @@ document.addEventListener('DOMContentLoaded', function() {
             loadExampleEssay(essayId);
         });
     });
+
+    // Restart landing tour button
+const restartLandingTourBtn = document.getElementById('restartLandingTourBtn');
+if (restartLandingTourBtn) {
+    restartLandingTourBtn.addEventListener('click', function() {
+        // Only show if on upload screen
+        const uploadSection = document.querySelector('.upload-section');
+        const comparisonResults = document.getElementById('comparisonResults');
+        
+        if (uploadSection && !uploadSection.classList.contains('hidden')) {
+            localStorage.removeItem('landingPageTutorialComplete');
+            landingTutorial = new LandingPageTutorial();
+            landingTutorial.start();
+        } else {
+            alert('Return to the upload screen to see the tour.');
+        }
+    });
+}
     
     // Navigation arrows
     document.getElementById('leftArrow').addEventListener('click', function() {
@@ -4885,6 +4926,249 @@ function startTutorialIfNeeded() {
         tutorialInstance.start();
     }, 500);
 }
+
+// Landing Page Tutorial System
+class LandingPageTutorial {
+    constructor() {
+        this.currentStep = 0;
+        this.steps = [
+            {
+                title: "Welcome! 👋",
+                content: "This tool helps writers visualize and reflect on their revision process. Let me show you how to get started!",
+                position: "center",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "Upload Your Drafts 📁",
+                content: "Click here or drag and drop multiple drafts of the same document. The tool works best with 2-4 versions showing your revision progression.",
+                target: ".file-input-container",
+                position: "below",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "Or Use Google Drive ☁️",
+                content: "Connect your Google Drive to import documents directly. This makes it easy to compare drafts stored in the cloud!",
+                target: "#googleDriveBtn",
+                position: "above",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "Try Example Essays 📚",
+                content: "Not ready to upload your own work? Check out the 'Example Essays' tab to see real student revision processes from NYU's Mercer Street journal.",
+                target: "#examplesTab",
+                position: "below",
+                showNext: false,
+                finalStep: true
+            }
+        ];
+    }
+
+    hasSeenTutorial() {
+        return localStorage.getItem('landingPageTutorialComplete') === 'true';
+    }
+
+    markComplete() {
+        localStorage.setItem('landingPageTutorialComplete', 'true');
+    }
+
+    start() {
+        if (this.hasSeenTutorial()) return;
+        
+        // Small delay to ensure page is loaded
+        setTimeout(() => {
+            this.currentStep = 0;
+            this.showStep();
+        }, 500);
+    }
+
+    showStep() {
+        const step = this.steps[this.currentStep];
+        
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'tutorial-overlay active';
+        overlay.id = 'landingTutorialOverlay';
+        document.body.appendChild(overlay);
+        
+        // Find target element
+        let targetElement = null;
+        if (step.target) {
+            targetElement = document.querySelector(step.target);
+        }
+        
+        // Create tooltip
+        const tooltip = this.createTooltip(step);
+        document.body.appendChild(tooltip);
+        
+        // Highlight target if found
+        if (targetElement) {
+            this.highlightElement(targetElement);
+        }
+        
+        // Position tooltip
+        requestAnimationFrame(() => {
+            this.positionTooltip(tooltip, step, targetElement);
+        });
+    }
+
+    createTooltip(step) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tutorial-tooltip';
+        tooltip.id = 'landingTutorialTooltip';
+        
+        let buttonsHtml = '';
+        if (step.showNext) {
+            buttonsHtml += `<button class="tutorial-btn tutorial-btn-primary" id="landingTutorialNext">Next</button>`;
+        }
+        if (step.finalStep) {
+            buttonsHtml += `<button class="tutorial-btn tutorial-btn-primary" id="landingTutorialDone">Got it!</button>`;
+        }
+        if (step.showSkip) {
+            buttonsHtml += `<button class="tutorial-btn tutorial-btn-secondary" id="landingTutorialSkip">Skip Tour</button>`;
+        }
+        
+        tooltip.innerHTML = `
+            ${this.currentStep > 0 ? `<div class="tutorial-step-indicator">Step ${this.currentStep + 1} of ${this.steps.length}</div>` : ''}
+            <h3>${step.title}</h3>
+            <p>${step.content}</p>
+            <div class="tutorial-tooltip-buttons">
+                ${buttonsHtml}
+            </div>
+        `;
+        
+        // Add event listeners
+        setTimeout(() => {
+            const nextBtn = document.getElementById('landingTutorialNext');
+            const skipBtn = document.getElementById('landingTutorialSkip');
+            const doneBtn = document.getElementById('landingTutorialDone');
+            
+            if (nextBtn) nextBtn.onclick = () => this.nextStep();
+            if (skipBtn) skipBtn.onclick = () => this.skip();
+            if (doneBtn) doneBtn.onclick = () => this.complete();
+        }, 0);
+        
+        return tooltip;
+    }
+
+    highlightElement(element) {
+        if (!element) return;
+        
+        const rect = element.getBoundingClientRect();
+        const highlight = document.createElement('div');
+        highlight.className = 'tutorial-highlight';
+        highlight.id = 'landingTutorialHighlight';
+        highlight.style.left = `${rect.left - 5}px`;
+        highlight.style.top = `${rect.top - 5}px`;
+        highlight.style.width = `${rect.width + 10}px`;
+        highlight.style.height = `${rect.height + 10}px`;
+        
+        document.body.appendChild(highlight);
+    }
+
+    positionTooltip(tooltip, step, targetElement) {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const margin = 20;
+        
+        // Center position (no target)
+        if (step.position === 'center' || !targetElement) {
+            const left = (viewportWidth - tooltipRect.width) / 2;
+            const top = (viewportHeight - tooltipRect.height) / 2;
+            
+            tooltip.style.left = `${Math.max(margin, left)}px`;
+            tooltip.style.top = `${Math.max(margin, top)}px`;
+            tooltip.style.transform = 'none';
+            return;
+        }
+        
+        const targetRect = targetElement.getBoundingClientRect();
+        let left, top;
+        
+        // Position relative to target
+        if (step.position === 'below') {
+            left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
+            top = targetRect.bottom + 20;
+            
+            if (left < margin) left = margin;
+            if (left + tooltipRect.width > viewportWidth - margin) {
+                left = viewportWidth - tooltipRect.width - margin;
+            }
+            
+            if (top + tooltipRect.height > viewportHeight - margin) {
+                top = targetRect.top - tooltipRect.height - 20;
+            }
+            
+        } else if (step.position === 'above') {
+            left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
+            top = targetRect.top - tooltipRect.height - 20;
+            
+            if (left < margin) left = margin;
+            if (left + tooltipRect.width > viewportWidth - margin) {
+                left = viewportWidth - tooltipRect.width - margin;
+            }
+            
+            if (top < margin) {
+                top = targetRect.bottom + 20;
+            }
+        }
+        
+        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+        
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+        tooltip.style.transform = 'none';
+    }
+
+    cleanup() {
+        const overlay = document.getElementById('landingTutorialOverlay');
+        const tooltip = document.getElementById('landingTutorialTooltip');
+        const highlight = document.getElementById('landingTutorialHighlight');
+        
+        if (overlay) overlay.remove();
+        if (tooltip) tooltip.remove();
+        if (highlight) highlight.remove();
+    }
+
+    nextStep() {
+        this.cleanup();
+        this.currentStep++;
+        
+        if (this.currentStep < this.steps.length) {
+            setTimeout(() => this.showStep(), 100);
+        } else {
+            this.complete();
+        }
+    }
+
+    skip() {
+        this.cleanup();
+        this.markComplete();
+    }
+
+    complete() {
+        this.cleanup();
+        this.markComplete();
+    }
+}
+
+// Initialize landing page tutorial
+let landingTutorial = null;
+
+// Start tutorial when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // ... your existing DOMContentLoaded code ...
+    
+    // Start landing page tutorial after a short delay
+    setTimeout(() => {
+        landingTutorial = new LandingPageTutorial();
+        landingTutorial.start();
+    }, 1000);
+});
 
 // Call this in your existing updateSliderPosition function
 // Add this at the end of updateSliderPosition(), just before the final closing brace:
