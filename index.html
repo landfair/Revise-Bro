@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.min.js"></script>
@@ -404,6 +405,23 @@
             margin-bottom: 0;
             flex-grow: 1;
         }
+
+        .pdf-gmail-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-standard);
+    background: #4285f4;
+    color: white;
+}
+
+.pdf-gmail-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
+}
 
         @media (max-width: 768px) {
             .diff-header {
@@ -1301,27 +1319,17 @@
     box-shadow: 0 5px 15px rgba(87, 6, 140, 0.3);
 }
 
-/* Print-specific styles */
+
 @media print {
-    /* Hide everything except the printable content */
-    body * {
-        visibility: hidden;
+    /* Force white background */
+    body {
+        background: white !important;
     }
     
-    #printableContent,
-    #printableContent * {
-        visibility: visible;
-    }
-    
-    #printableContent {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-    }
-    
-    /* Hide navigation and UI elements */
+    /* Hide specific UI elements but keep container structure */
     .header,
+    .upload-section,
+    .comparison-viewport,
     .nav-arrow,
     .navigation-info,
     .generate-report-btn,
@@ -1329,8 +1337,65 @@
     .export-pdf-btn,
     .new-comparison-btn,
     .data-manager,
-    .upload-section {
+    .modal,
+    #comparisonResults,
+    #errorMessage,
+    .tutorial-overlay,
+    .tutorial-tooltip,
+    .restore-banner {
         display: none !important;
+    }
+    
+    /* Make sure printable content is visible and positioned */
+    #printableContent {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .container {
+        max-width: 100% !important;
+        padding: 20px !important;
+        background: white !important;
+    }
+    
+    /* Two-column layout: 60% text, 40% annotations */
+    .print-page {
+        page-break-after: always;
+        page-break-inside: avoid;
+        position: relative;
+        padding: 20px;
+        background: white !important;
+    }
+    
+    .print-page:last-child {
+        page-break-after: auto;
+    }
+    
+    .print-content-wrapper {
+        display: flex;
+        gap: 20px;
+        position: relative;
+        background: white !important;
+    }
+    
+    .print-main-content {
+        width: 60%;
+        flex-shrink: 0;
+        line-height: 1.8;
+        font-size: 11pt;
+        background: white !important;
+    }
+    
+    .print-annotations-margin {
+        width: 38%;
+        flex-shrink: 0;
+        border-left: 2px solid #ddd;
+        padding-left: 20px;
+        background: white !important;
     }
     
     /* Optimize diff highlighting for print */
@@ -1339,6 +1404,7 @@
         color: #c62828 !important;
         text-decoration: line-through;
         border-left: 3px solid #ef5350 !important;
+        padding: 2px 4px;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
@@ -1347,55 +1413,75 @@
         background-color: #e8f5e8 !important;
         color: #2e7d32 !important;
         border-left: 3px solid #66bb6a !important;
+        padding: 2px 4px;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
     
+    /* Annotation reference numbers */
+    .annotation-ref {
+        display: inline-block;
+        border: 1.5px solid #000 !important;
+        background: white !important;
+        color: #000 !important;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        line-height: 14px;
+        text-align: center;
+        font-weight: bold;
+        margin-left: 3px;
+        vertical-align: super;
+        font-size: 8pt;
+    }
+    
+    /* Annotation in margin */
+    .margin-annotation {
+        margin-bottom: 20px;
+        page-break-inside: avoid;
+        font-size: 9pt;
+        line-height: 1.4;
+    }
+    
+    .margin-annotation-number {
+        display: inline-block;
+        border: 2px solid #000 !important;
+        background: white !important;
+        color: #000 !important;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        line-height: 18px;
+        text-align: center;
+        font-weight: bold;
+        margin-right: 8px;
+        flex-shrink: 0;
+    }
+    
+    .margin-annotation-content {
+        font-style: italic;
+        color: #333 !important;
+    }
+    
+    .margin-annotation-text {
+        font-size: 8pt;
+        color: #666 !important;
+        margin-top: 4px;
+        font-style: normal;
+        border: 1px solid #ddd !important;
+        background: white !important;
+        padding: 4px 6px;
+        border-radius: 3px;
+    }
+    
     .has-annotation {
-        background-color: rgba(87, 6, 140, 0.1) !important;
-        border-bottom: 2px solid #57068c !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        background-color: white !important;
+        border-bottom: 2px solid #000 !important;
+        padding: 2px 4px;
     }
     
     /* Ensure colors print */
     * {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    
-    /* Page breaks */
-    .panel {
-        page-break-after: always;
-        page-break-inside: avoid;
-    }
-    
-    .panel:last-child {
-        page-break-after: auto;
-    }
-    
-    .annotation-in-print {
-        background-color: #f8f9fa !important;
-        border-left: 4px solid #57068c !important;
-        padding: 10px;
-        margin: 10px 0;
-        page-break-inside: avoid;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    
-    .annotation-in-print-header {
-        font-weight: bold;
-        color: #57068c !important;
-        margin-bottom: 5px;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    
-    .annotation-in-print-text {
-        font-style: italic;
-        color: #333 !important;
-        font-size: 0.9em;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
@@ -1405,17 +1491,23 @@
         border: 2px solid #333 !important;
         padding: 15px;
         margin: 20px 0;
-        background-color: #f8f9fa !important;
+        background-color: white !important;
         page-break-inside: avoid;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
     }
     
     .print-legend h3 {
         margin-top: 0;
-        color: #57068c !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        color: #000 !important;
+    }
+    
+    /* Page headers */
+    .print-page-header {
+        font-size: 14pt;
+        font-weight: bold;
+        color: #000 !important;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #000 !important;
     }
 }
 
@@ -1433,12 +1525,14 @@
 
 .pdf-options-content {
     background-color: white;
-    margin: 10% auto;
+    margin: 5vh auto;
     padding: 30px;
     border-radius: var(--border-radius);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
     width: 90%;
     max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
     position: relative;
 }
 
@@ -1577,6 +1671,159 @@
 }
 .fizzle-in {
   animation: fizzleIn 0.9s forwards ease-out;
+}
+
+/* Tutorial Overlay and Tooltips */
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+    display: none;
+}
+
+.tutorial-overlay.active {
+    display: block;
+}
+
+.tutorial-tooltip {
+    position: fixed;
+    background: white;
+    border: 3px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    max-width: 400px;
+    animation: tooltipFadeIn 0.3s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tutorial-tooltip h3 {
+    color: var(--primary-dark);
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+}
+
+.tutorial-tooltip p {
+    color: #333;
+    line-height: 1.6;
+    margin: 0 0 20px 0;
+}
+
+.tutorial-tooltip-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.tutorial-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-standard);
+}
+
+.tutorial-btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.tutorial-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(87, 6, 140, 0.3);
+}
+
+.tutorial-btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.tutorial-btn-secondary:hover {
+    background: #d0d0d0;
+}
+
+.tutorial-highlight {
+    position: fixed;
+    border: 3px solid var(--primary-color);
+    border-radius: 8px;
+    box-shadow: 0 0 0 4px rgba(87, 6, 140, 0.3);
+    z-index: 9997;
+    pointer-events: none;
+    animation: highlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 4px rgba(87, 6, 140, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(87, 6, 140, 0.5);
+    }
+}
+
+.tutorial-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.tutorial-arrow-up {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid var(--primary-color);
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tutorial-arrow-down {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 15px solid var(--primary-color);
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tutorial-arrow-left {
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-right: 15px solid var(--primary-color);
+    left: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tutorial-arrow-right {
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-left: 15px solid var(--primary-color);
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tutorial-step-indicator {
+    text-align: center;
+    color: #666;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
 }
 
 
@@ -1720,13 +1967,13 @@
         <h3>Export Options</h3>
         
         <div class="pdf-option" onclick="document.getElementById('includeAllDrafts').click()">
-            <input type="checkbox" id="includeAllDrafts" checked>
+            <input type="checkbox" id="includeAllDrafts" >
             <label for="includeAllDrafts">Include all drafts</label>
             <div class="pdf-option-description">Export all draft versions and their comparisons</div>
         </div>
         
         <div class="pdf-option" onclick="document.getElementById('includeCurrentOnly').click()">
-            <input type="checkbox" id="includeCurrentOnly">
+            <input type="checkbox" id="includeCurrentOnly"checked>
             <label for="includeCurrentOnly">Current view only</label>
             <div class="pdf-option-description">Export only the currently visible draft or comparison</div>
         </div>
@@ -1738,13 +1985,19 @@
         </div>
         
         <div class="pdf-option" onclick="document.getElementById('includeLegend').click()">
-            <input type="checkbox" id="includeLegend" checked>
+            <input type="checkbox" id="includeLegend" >
             <label for="includeLegend">Include color legend</label>
             <div class="pdf-option-description">Add a legend explaining the color coding</div>
         </div>
         
         <div class="pdf-buttons">
             <button class="pdf-generate-btn" id="generatePdfBtn">Generate PDF</button>
+            <button class="pdf-gmail-btn" id="sendToGmailBtn" style="background: #4285f4;">
+                <svg style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24" fill="white">
+                    <path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z" />
+                </svg>
+                Send to Gmail
+            </button>
             <button class="pdf-cancel-btn" id="pdfCancelBtn">Cancel</button>
         </div>
     </div>
@@ -2540,6 +2793,7 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
             if (currentEssay) {
         saveState();
     }
+    startTutorialIfNeeded();
         }
         
         function switchTab(activeTabId, activeContentId) {
@@ -2560,8 +2814,7 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
 // Google Drive Integration
 const GOOGLE_CLIENT_ID = '472424092519-9cr5vsp2cvdtdu9b37jf231d39tivgnm.apps.googleusercontent.com';
 const WORKER_URL = 'https://revise-bro.al4828.workers.dev';
-const SCOPES = 'https://www.googleapis.com/auth/drive.readonly'; // <-- ADD THIS
-
+const SCOPES = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/gmail.compose';
 let tokenClient;
 let accessToken = null;
 let pickerInited = false;
@@ -3520,22 +3773,13 @@ function generatePrintableContent() {
     const printableDiv = document.getElementById('printableContent');
     let html = '';
     
-    // Add title
-    if (currentEssay) {
-        html += `<div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #57068c; margin-bottom: 10px;">${currentEssay.title}</h1>
-            <p style="color: #666; font-style: italic;">${currentEssay.author}</p>
-            <p style="color: #999; font-size: 0.9em;">Generated on ${new Date().toLocaleString()}</p>
-        </div>`;
-    }
-    
-    // Add legend
+    // Add legend (no title page anymore)
     if (includeLegend) {
-        html += `<div class="print-legend">
+        html += `<div class="print-legend" style="margin-bottom: 20px;">
             <h3>Color Legend</h3>
             <p><span class="deletion word-level">Deleted text</span> - Text removed from previous draft</p>
             <p><span class="addition word-level">Added text</span> - Text added in revision</p>
-            ${includeAnnotations ? '<p><span class="has-annotation">Annotated text 📝</span> - Text with revision notes</p>' : ''}
+            ${includeAnnotations ? '<p>Numbers in circles indicate annotated revisions with notes in the margin</p>' : ''}
         </div>`;
     }
     
@@ -3546,13 +3790,14 @@ function generatePrintableContent() {
         const currentPanelInfo = panelInfo[currentPosition];
         
         if (currentPanelInfo.type === 'draft') {
-            html += generateDraftForPrint(currentEssay.drafts[currentPanelInfo.index]);
+            html += generateDraftForPrint(currentEssay.drafts[currentPanelInfo.index], true);
         } else if (currentPanelInfo.type === 'diff') {
             html += generateDiffForPrint(
                 currentEssay.drafts[currentPanelInfo.fromIndex],
                 currentEssay.drafts[currentPanelInfo.toIndex],
                 currentPanel,
-                includeAnnotations
+                includeAnnotations,
+                true
             );
         }
     } else if (includeAllDrafts) {
@@ -3562,14 +3807,16 @@ function generatePrintableContent() {
         const panelInfo = getPanelInfo();
         
         panelInfo.forEach((info, index) => {
+            const isFirstPage = index === 0;
             if (info.type === 'draft') {
-                html += generateDraftForPrint(currentEssay.drafts[info.index]);
+                html += generateDraftForPrint(currentEssay.drafts[info.index], isFirstPage);
             } else if (info.type === 'diff') {
                 html += generateDiffForPrint(
                     currentEssay.drafts[info.fromIndex],
                     currentEssay.drafts[info.toIndex],
                     panels[index],
-                    includeAnnotations
+                    includeAnnotations,
+                    isFirstPage
                 );
             }
         });
@@ -3577,60 +3824,124 @@ function generatePrintableContent() {
     
     printableDiv.innerHTML = html;
 }
+function generateDiffForPrint(fromDraft, toDraft, panelElement, includeAnnotations, isFirstPage = false) {
+    // Get annotations for this diff
+    const relevantAnnotations = includeAnnotations ? 
+        getAnnotationsForDiff(fromDraft.version, toDraft.version) : [];
+    
+    // Create a map of text to annotation number
+    const annotationMap = new Map();
+    relevantAnnotations.forEach(([id, data], index) => {
+        annotationMap.set(data.text, index + 1);
+    });
+    
+    // Get the diff content and add annotation references
+    let diffContent = panelElement.querySelector('.panel-content').innerHTML;
+    
+    // Add reference numbers to annotated text
+    if (includeAnnotations) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = diffContent;
+        
+        const additions = tempDiv.querySelectorAll('.addition');
+        const deletions = tempDiv.querySelectorAll('.deletion');
+        
+        [...additions, ...deletions].forEach(el => {
+            const text = el.textContent;
+            const annotationNum = annotationMap.get(text);
+            if (annotationNum) {
+                el.innerHTML += `<span class="annotation-ref">${annotationNum}</span>`;
+            }
+        });
+        
+        diffContent = tempDiv.innerHTML;
+    }
+    
+    // Build the HTML with two-column layout
+    let html = `
+        <div class="print-page">
+    `;
+    
+    // Add document title only on first page
+    if (isFirstPage && currentEssay) {
+        html += `
+            <div style="text-align: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #333;">
+                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 3px;">${currentEssay.title}</div>
+                <div style="font-size: 10pt; font-style: italic;">${currentEssay.author} • ${new Date().toLocaleDateString()}</div>
+            </div>
+        `;
+    }
+    
+    html += `
+            <div class="print-page-header">
+                Changes: ${fromDraft.version} → ${toDraft.version}
+            </div>
+            
+            <div class="print-content-wrapper">
+                <div class="print-main-content">
+                    ${diffContent}
+                </div>
+                
+                <div class="print-annotations-margin">
+    `;
+    
+    // Add annotations to margin
+    if (includeAnnotations && relevantAnnotations.length > 0) {
+        html += '<div style="font-weight: bold; font-size: 10pt; margin-bottom: 15px; color: #000;">Revision Notes</div>';
+        
+        relevantAnnotations.forEach(([id, data], index) => {
+            const truncatedText = data.text.length > 60 ? 
+                data.text.substring(0, 60) + '...' : 
+                data.text;
+            
+            html += `
+                <div class="margin-annotation">
+                    <div style="display: flex; align-items: start;">
+                        <span class="margin-annotation-number">${index + 1}</span>
+                        <div style="flex: 1;">
+                            <div class="margin-annotation-text">"${truncatedText}"</div>
+                            <div class="margin-annotation-content">${data.note}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    } else if (includeAnnotations) {
+        html += '<div style="font-size: 9pt; color: #999; font-style: italic;">No annotations for this section</div>';
+    }
+    
+    html += `
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return html;
+}
 
-function generateDraftForPrint(draft) {
-    return `
-        <div class="panel" style="margin-bottom: 40px; padding: 20px;">
-            <h2 style="color: #57068c; border-bottom: 2px solid #57068c; padding-bottom: 10px;">${draft.version}</h2>
-            <div class="panel-content" style="margin-top: 20px; line-height: 1.8;">
+function generateDraftForPrint(draft, isFirstPage = false) {
+    let html = `<div class="print-page">`;
+    
+    // Add document title only on first page
+    if (isFirstPage && currentEssay) {
+        html += `
+            <div style="text-align: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #333;">
+                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 3px;">${currentEssay.title}</div>
+                <div style="font-size: 10pt; font-style: italic;">${currentEssay.author} • ${new Date().toLocaleDateString()}</div>
+            </div>
+        `;
+    }
+    
+    html += `
+            <div class="print-page-header">${draft.version}</div>
+            <div class="print-main-content" style="width: 100%;">
                 ${formatText(draft.text)}
             </div>
         </div>
     `;
-}
-
-function generateDiffForPrint(fromDraft, toDraft, panelElement, includeAnnotations) {
-    let html = `
-        <div class="panel diff-panel" style="margin-bottom: 40px; padding: 20px; background-color: #fafafa;">
-            <h2 style="color: #57068c; border-bottom: 2px solid #57068c; padding-bottom: 10px;">
-                Changes: ${fromDraft.version} → ${toDraft.version}
-            </h2>
-            <div class="panel-content" style="margin-top: 20px; line-height: 1.8;">
-    `;
     
-    // Get the diff content from the panel
-    const diffContent = panelElement.querySelector('.panel-content').innerHTML;
-    html += diffContent;
-    
-    // Add annotations if requested
-    if (includeAnnotations) {
-        const relevantAnnotations = getAnnotationsForDiff(fromDraft.version, toDraft.version);
-        
-        if (relevantAnnotations.length > 0) {
-            html += `
-                <div style="margin-top: 40px; page-break-before: avoid;">
-                    <h3 style="color: #57068c; border-bottom: 1px solid #57068c; padding-bottom: 5px;">
-                        Revision Notes
-                    </h3>
-            `;
-            
-            relevantAnnotations.forEach(([id, data]) => {
-                html += `
-                    <div class="annotation-in-print">
-                        <div class="annotation-in-print-header">📝 "${data.text.substring(0, 80)}${data.text.length > 80 ? '...' : ''}"</div>
-                        <div class="annotation-in-print-text">${data.note}</div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-        }
-    }
-    
-    html += '</div></div>';
     return html;
 }
-
 function getAnnotationsForDiff(fromDraft, toDraft) {
     if (!currentEssay) return [];
     
@@ -3843,7 +4154,7 @@ function calculateRevisionPatterns(analysis) {
     }
 }
 
-// Generate enhanced table view with quantitative analysis
+// Generate purely quantitative table view
 function generateEnhancedTableView(analysis) {
     const categories = [
         { key: 'micro', label: 'Micro (1-2 words)', description: 'Punctuation, articles, minor adjustments' },
@@ -3876,25 +4187,25 @@ function generateEnhancedTableView(analysis) {
             </div>
         </div>
 
-        <!-- Revision Patterns -->
+        <!-- Revision Distribution -->
         <div style="margin: 30px 0; padding: 20px; background: #f0ecf8; border-radius: 8px;">
-            <h3 style="color: var(--primary-dark); margin-bottom: 15px;">Revision Patterns</h3>
+            <h3 style="color: var(--primary-dark); margin-bottom: 15px;">Revision Distribution</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                 <div>
-                    <strong>Surface Edits:</strong> ${analysis.patterns.surfaceEdits} changes<br>
-                    <small style="color: #666;">Minor word-level adjustments</small>
+                    <strong>Micro Changes:</strong> ${analysis.patterns.surfaceEdits} changes<br>
+                    <small style="color: #666;">${Math.round((analysis.patterns.surfaceEdits / analysis.statistics.totalChanges) * 100) || 0}% of total</small>
                 </div>
                 <div>
-                    <strong>Substantive Edits:</strong> ${analysis.patterns.substantiveEdits} changes<br>
-                    <small style="color: #666;">Meaningful phrase/sentence changes</small>
+                    <strong>Small-Medium Changes:</strong> ${analysis.patterns.substantiveEdits} changes<br>
+                    <small style="color: #666;">${Math.round((analysis.patterns.substantiveEdits / analysis.statistics.totalChanges) * 100) || 0}% of total</small>
                 </div>
                 <div>
-                    <strong>Structural Changes:</strong> ${analysis.patterns.structuralChanges} changes<br>
-                    <small style="color: #666;">Major paragraph/section revisions</small>
+                    <strong>Large-Massive Changes:</strong> ${analysis.patterns.structuralChanges} changes<br>
+                    <small style="color: #666;">${Math.round((analysis.patterns.structuralChanges / analysis.statistics.totalChanges) * 100) || 0}% of total</small>
                 </div>
                 <div>
-                    <strong>Add/Delete Ratio:</strong> ${analysis.patterns.balanceScore}<br>
-                    <small style="color: #666;">${interpretBalanceScore(analysis.patterns.balanceScore)}</small>
+                    <strong>Addition/Deletion Ratio:</strong> ${analysis.patterns.balanceScore}<br>
+                    <small style="color: #666;">${describeRatio(analysis.patterns.balanceScore)}</small>
                 </div>
             </div>
         </div>
@@ -3908,7 +4219,7 @@ function generateEnhancedTableView(analysis) {
                     <th style="text-align: center;">Additions</th>
                     <th style="text-align: center;">Deletions</th>
                     <th style="text-align: center;">Total</th>
-                    <th>Description</th>
+                    <th style="text-align: center;">% of All Changes</th>
                 </tr>
             </thead>
             <tbody>
@@ -3921,6 +4232,7 @@ function generateEnhancedTableView(analysis) {
         const additions = analysis.additions[cat.key].length;
         const deletions = analysis.deletions[cat.key].length;
         const rowTotal = additions + deletions;
+        const percentage = Math.round((rowTotal / analysis.statistics.totalChanges) * 100) || 0;
         
         totalAdditions += additions;
         totalDeletions += deletions;
@@ -3931,7 +4243,7 @@ function generateEnhancedTableView(analysis) {
                 <td style="text-align: center; color: #2e7d32; font-weight: 600;">${additions}</td>
                 <td style="text-align: center; color: #c62828; font-weight: 600;">${deletions}</td>
                 <td style="text-align: center; font-weight: 700;">${rowTotal}</td>
-                <td style="font-size: 0.85rem; color: #666;">${cat.description}</td>
+                <td style="text-align: center; font-weight: 600;">${percentage}%</td>
             </tr>
         `;
     });
@@ -3943,20 +4255,69 @@ function generateEnhancedTableView(analysis) {
             <td style="text-align: center; font-weight: 700; color: #2e7d32;">${totalAdditions}</td>
             <td style="text-align: center; font-weight: 700; color: #c62828;">${totalDeletions}</td>
             <td style="text-align: center; font-weight: 700;">${totalAdditions + totalDeletions}</td>
-            <td></td>
+            <td style="text-align: center; font-weight: 700;">100%</td>
         </tr>
     `;
     
     html += '</tbody></table>';
     
-    // Add interpretation
-    html += generateQuantitativeInterpretation(analysis);
+    // Add quantitative summary
+    html += generateQuantitativeObservations(analysis);
     
-    // Add word frequency analysis if significant
-    const wordFrequency = analyzeWordFrequency(analysis);
-    if (wordFrequency.length > 0) {
-        html += generateWordFrequencySection(wordFrequency);
-    }
+    return html;
+}
+
+// Replace interpretBalanceScore with purely descriptive version
+function describeRatio(score) {
+    if (score === "∞") return "Only additions (no deletions)";
+    if (score === "0") return "No changes detected";
+    const numScore = parseFloat(score);
+    if (numScore > 1) return `${numScore}× more additions than deletions`;
+    if (numScore === 1) return "Equal additions and deletions";
+    return `${(1/numScore).toFixed(2)}× more deletions than additions`;
+}
+
+// NEW: Purely observational summary (NO interpretation)
+function generateQuantitativeObservations(analysis) {
+    const totalChanges = analysis.statistics.totalChanges;
+    const microPercent = Math.round((analysis.patterns.surfaceEdits / totalChanges) * 100) || 0;
+    const substantivePercent = Math.round((analysis.patterns.substantiveEdits / totalChanges) * 100) || 0;
+    const structuralPercent = Math.round((analysis.patterns.structuralChanges / totalChanges) * 100) || 0;
+    const netChange = analysis.statistics.netWordChange;
+    
+    let html = `
+        <div style="margin-top: 30px; padding: 25px; background: white; border-left: 4px solid var(--primary-color); border-radius: 8px;">
+            <h3 style="color: var(--primary-dark); margin-bottom: 15px;">📊 Quantitative Observations</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <strong>Change Distribution:</strong>
+                <ul style="margin: 8px 0; padding-left: 20px;">
+                    <li>${microPercent}% of changes are 1-2 words (micro)</li>
+                    <li>${substantivePercent}% of changes are 3-50 words (small-medium)</li>
+                    <li>${structuralPercent}% of changes are 51+ words (large-massive)</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <strong>Word Count Changes:</strong>
+                <ul style="margin: 8px 0; padding-left: 20px;">
+                    <li>Net change: ${netChange > 0 ? '+' : ''}${netChange} words</li>
+                    <li>Words added: ${analysis.statistics.totalWordsAdded}</li>
+                    <li>Words deleted: ${analysis.statistics.totalWordsDeleted}</li>
+                    <li>Ratio: ${analysis.patterns.balanceScore} additions per deletion</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <strong>Change Patterns:</strong>
+                <ul style="margin: 8px 0; padding-left: 20px;">
+                    <li>${analysis.patterns.surfaceEdits} micro-level changes</li>
+                    <li>${analysis.patterns.substantiveEdits} phrase/sentence-level changes</li>
+                    <li>${analysis.patterns.structuralChanges} paragraph/section-level changes</li>
+                </ul>
+            </div>
+        </div>
+    `;
     
     return html;
 }
@@ -3973,72 +4334,7 @@ function interpretBalanceScore(score) {
     return "Heavy condensation";
 }
 
-// Generate quantitative interpretation
-function generateQuantitativeInterpretation(analysis) {
-    const totalChanges = analysis.statistics.totalChanges;
-    const surfacePercent = Math.round((analysis.patterns.surfaceEdits / totalChanges) * 100) || 0;
-    const substantivePercent = Math.round((analysis.patterns.substantiveEdits / totalChanges) * 100) || 0;
-    const structuralPercent = Math.round((analysis.patterns.structuralChanges / totalChanges) * 100) || 0;
-    
-    let interpretation = `
-        <div style="margin-top: 30px; padding: 25px; background: white; border-left: 4px solid var(--primary-color); border-radius: 8px;">
-            <h3 style="color: var(--primary-dark); margin-bottom: 15px;">📊 Quantitative Analysis</h3>
-    `;
-    
-    // Revision scope assessment
-    interpretation += '<p><strong>Revision Scope:</strong> ';
-    if (structuralPercent > 30) {
-        interpretation += `This revision shows <span style="color: var(--primary-color); font-weight: 600;">major structural changes</span> with ${structuralPercent}% of edits at the paragraph level or larger. This suggests significant reconceptualization or reorganization of ideas.`;
-    } else if (substantivePercent > 50) {
-        interpretation += `This revision is <span style="color: var(--primary-color); font-weight: 600;">substantially revised</span> with ${substantivePercent}% of changes at the phrase/sentence level, indicating meaningful content refinement without major structural overhaul.`;
-    } else if (surfacePercent > 60) {
-        interpretation += `This revision is <span style="color: var(--primary-color); font-weight: 600;">primarily surface-level</span> with ${surfacePercent}% micro-edits. Consider whether deeper structural or conceptual changes might strengthen the work.`;
-    } else {
-        interpretation += `This revision shows a <span style="color: var(--primary-color); font-weight: 600;">mixed approach</span> with balanced changes across different scales.`;
-    }
-    interpretation += '</p>';
-    
-    // Net change assessment
-    interpretation += '<p style="margin-top: 12px;"><strong>Content Evolution:</strong> ';
-    const netChange = analysis.statistics.netWordChange;
-    const percentChange = Math.abs(Math.round((netChange / (analysis.statistics.totalWordsDeleted || 1)) * 100));
-    
-    if (netChange > 100) {
-        interpretation += `The text <span style="color: #2e7d32; font-weight: 600;">expanded significantly</span> by ${netChange} words. This expansion suggests development of ideas, addition of evidence, or elaboration of arguments.`;
-    } else if (netChange < -100) {
-        interpretation += `The text was <span style="color: #c62828; font-weight: 600;">condensed significantly</span> by ${Math.abs(netChange)} words. This suggests focused editing for clarity and concision.`;
-    } else if (Math.abs(netChange) < 20) {
-        interpretation += `The text length remained <span style="color: var(--primary-color); font-weight: 600;">relatively stable</span> (${netChange > 0 ? '+' : ''}${netChange} words), suggesting refinement rather than expansion or reduction.`;
-    } else {
-        interpretation += `The text ${netChange > 0 ? 'grew' : 'shrank'} by <span style="font-weight: 600;">${Math.abs(netChange)} words</span>, a moderate change suggesting targeted revision.`;
-    }
-    interpretation += '</p>';
-    
-    // Revision style
-    interpretation += '<p style="margin-top: 12px;"><strong>Revision Style:</strong> ';
-    const balanceScore = analysis.patterns.balanceScore;
-    if (balanceScore === "∞" || parseFloat(balanceScore) > 3) {
-        interpretation += 'This appears to be an <span style="color: var(--primary-color); font-weight: 600;">additive revision</span>, building upon the existing text with minimal removal of content.';
-    } else if (parseFloat(balanceScore) < 0.5) {
-        interpretation += 'This appears to be a <span style="color: var(--primary-color); font-weight: 600;">reductive revision</span>, focusing on cutting and condensing rather than adding new material.';
-    } else {
-        interpretation += 'This represents a <span style="color: var(--primary-color); font-weight: 600;">transformative revision</span> with substantial both additions and deletions, suggesting significant reworking.';
-    }
-    interpretation += '</p>';
-    
-    // Sommers reference
-    if (surfacePercent > 60) {
-        interpretation += `
-            <div style="margin-top: 20px; padding: 15px; background: #fff8e1; border-radius: 5px;">
-                <strong>💡 Research Insight:</strong> According to Nancy Sommers' research, expert writers tend to make more structural and conceptual revisions compared to novices who focus on surface-level changes. 
-                With ${surfacePercent}% surface edits in this revision, consider reviewing the overall argument structure and paragraph organization for potential deeper improvements.
-            </div>
-        `;
-    }
-    
-    interpretation += '</div>';
-    return interpretation;
-}
+
 
 // Analyze word frequency in changes
 function analyzeWordFrequency(analysis) {
@@ -4100,6 +4396,7 @@ function generateTableView(analysis) {
 }
 
 // Also enhance the detailed view
+// Better version with data attribute for count
 function generateDetailedView(analysis) {
     let html = '<div class="detail-list">';
     
@@ -4125,28 +4422,55 @@ function generateDetailedView(analysis) {
             const items = analysis[type.key][cat.key];
             if (items.length > 0) {
                 hasContent = true;
+                
+                // Generate unique ID for this section
+                const sectionId = `${type.key}-${cat.key}-${Math.random().toString(36).substr(2, 9)}`;
+                
                 typeHtml += `
                     <h4 style="margin-top: 15px; color: var(--primary-dark);">
                         ${cat.label} (${items.length} changes, ${items.reduce((sum, item) => sum + item.wordCount, 0)} words)
                     </h4>
                 `;
                 
-                // Show first 3 examples of each category
-                items.slice(0, 3).forEach(item => {
-                    typeHtml += `
-                        <div class="revision-item ${type.class}" style="margin: 10px 0;">
-                            <div class="revision-text">
-                                "${item.text.substring(0, 150)}${item.text.length > 150 ? '...' : ''}"
-                            </div>
-                            <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
-                                ${item.wordCount} words, ${item.charCount} characters
-                            </div>
-                        </div>
-                    `;
+                // Show first 5 items
+                items.slice(0, 5).forEach((item, index) => {
+                    typeHtml += generateRevisionItem(item, index, items.length, type.class);
                 });
                 
-                if (items.length > 3) {
-                    typeHtml += `<p style="color: #666; font-style: italic;">... and ${items.length - 3} more ${cat.label.toLowerCase()}</p>`;
+                // If more than 5 items, add hidden items and "Show More" button
+                if (items.length > 5) {
+                    const remainingCount = items.length - 5;
+                    
+                    typeHtml += `<div id="${sectionId}-hidden" style="display: none;">`;
+                    
+                    items.slice(5).forEach((item, index) => {
+                        typeHtml += generateRevisionItem(item, index + 5, items.length, type.class);
+                    });
+                    
+                    typeHtml += `</div>`;
+                    
+                    typeHtml += `
+                        <button 
+                            onclick="toggleRevisionSection('${sectionId}', ${remainingCount})" 
+                            id="${sectionId}-btn"
+                            style="
+                                background: var(--primary-color);
+                                color: white;
+                                border: none;
+                                border-radius: 20px;
+                                padding: 8px 16px;
+                                font-size: 0.9rem;
+                                font-weight: 600;
+                                cursor: pointer;
+                                margin: 10px 0;
+                                transition: var(--transition-standard);
+                            "
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(87, 6, 140, 0.3)'"
+                            onmouseout="this.style.transform=''; this.style.boxShadow=''"
+                        >
+                            Show All (${remainingCount} more)
+                        </button>
+                    `;
                 }
             }
         });
@@ -4161,6 +4485,442 @@ function generateDetailedView(analysis) {
     html += '</div>';
     return html;
 }
+
+// Send PDF to Gmail Draft
+async function sendToGmailDraft() {
+    // Check if user is authenticated
+    if (!accessToken) {
+        alert('Please connect to Google Drive first to use Gmail integration.');
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('loadingSpinner').style.display = 'flex';
+    document.getElementById('pdfOptionsModal').style.display = 'none';
+    
+    try {
+        // Generate the printable content
+        generatePrintableContent();
+        
+        // Get the HTML content
+        const printableDiv = document.getElementById('printableContent');
+        const element = printableDiv.cloneNode(true);
+        element.style.display = 'block';
+        
+        // Configure html2pdf options
+        const opt = {
+            margin: 0.5,
+            filename: `${currentEssay ? currentEssay.title : 'Revision-Comparison'}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        // Generate PDF as blob
+        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+        
+        // Convert blob to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(pdfBlob);
+        reader.onloadend = async function() {
+            const base64data = reader.result.split(',')[1];
+            
+            // Create email with attachment
+            const subject = currentEssay ? 
+                `Revision Analysis: ${currentEssay.title}` : 
+                'Document Revision Analysis';
+            
+            const emailBody = currentEssay ?
+                `Please find attached the revision analysis for "${currentEssay.title}" by ${currentEssay.author}.\n\nGenerated on ${new Date().toLocaleDateString()}` :
+                `Please find attached the revision analysis.\n\nGenerated on ${new Date().toLocaleDateString()}`;
+            
+            // Create RFC 2822 formatted message
+            const boundary = '----=_Part_' + Math.random().toString(36).substr(2, 9);
+            const message = [
+                'Content-Type: multipart/mixed; boundary="' + boundary + '"\r\n',
+                'MIME-Version: 1.0\r\n',
+                'Subject: ' + subject + '\r\n',
+                'To: \r\n\r\n',
+                '--' + boundary + '\r\n',
+                'Content-Type: text/plain; charset="UTF-8"\r\n',
+                'Content-Transfer-Encoding: 7bit\r\n\r\n',
+                emailBody + '\r\n\r\n',
+                '--' + boundary + '\r\n',
+                'Content-Type: application/pdf; name="' + opt.filename + '"\r\n',
+                'Content-Disposition: attachment; filename="' + opt.filename + '"\r\n',
+                'Content-Transfer-Encoding: base64\r\n\r\n',
+                base64data + '\r\n\r\n',
+                '--' + boundary + '--'
+            ].join('');
+            
+            // Encode message in base64url
+            const encodedMessage = btoa(unescape(encodeURIComponent(message)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+            
+            // Create Gmail draft via API
+            const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/drafts', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: {
+                        raw: encodedMessage
+                    }
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                alert('✅ Gmail draft created successfully! Check your Gmail drafts folder.');
+                
+                // Optional: Open Gmail in new tab
+                window.open('https://mail.google.com/mail/#drafts', '_blank');
+            } else {
+                const error = await response.json();
+                console.error('Gmail API error:', error);
+                alert('Error creating Gmail draft. Please try again.');
+            }
+        };
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error creating Gmail draft: ' + error.message);
+    } finally {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+}
+
+// Tutorial System for First-Time Users - IMPROVED POSITIONING
+class DiffTutorial {
+    constructor() {
+        this.currentStep = 0;
+        this.steps = [
+            {
+                title: "Welcome to the Revision Viewer! 👋",
+                content: "This tool shows you exactly what changed between drafts. Let me give you a quick tour!",
+                position: "center",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "Color-Coded Changes",
+                content: "Green highlights show text that was added. Red highlights show text that was deleted. The legend at the top explains the color coding.",
+                target: ".diff-legend",
+                position: "below",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "Click to Annotate 📝",
+                content: "Click on any highlighted change (green or red) to add your own notes about why you made that revision. This helps you reflect on your writing process!",
+                findFirstChange: true, // Special flag to find first visible change
+                position: "above",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "View Your Annotations",
+                content: "Click the 'View Annotations' button to see all your revision notes in one place. You can also generate a report and export as PDF!",
+                target: "#viewAnnotationsBtn",
+                position: "above",
+                showNext: false,
+                showSkip: false,
+                finalStep: true
+            }
+        ];
+    }
+
+    hasSeenTutorial() {
+        return localStorage.getItem('revisionToolTutorialComplete') === 'true';
+    }
+
+    markComplete() {
+        localStorage.setItem('revisionToolTutorialComplete', 'true');
+    }
+
+    start() {
+        if (this.hasSeenTutorial()) return;
+        this.currentStep = 0;
+        this.showStep();
+    }
+
+    showStep() {
+        const step = this.steps[this.currentStep];
+        
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'tutorial-overlay active';
+        overlay.id = 'tutorialOverlay';
+        document.body.appendChild(overlay);
+        
+        // Find target element
+        let targetElement = null;
+        if (step.findFirstChange) {
+            // Find first visible change in the viewport
+            targetElement = this.findFirstVisibleChange();
+        } else if (step.target) {
+            targetElement = document.querySelector(step.target);
+        }
+        
+        // Create tooltip
+        const tooltip = this.createTooltip(step);
+        document.body.appendChild(tooltip);
+        
+        // Highlight target if found
+        if (targetElement) {
+            this.highlightElement(targetElement);
+        }
+        
+        // Position tooltip AFTER it's in DOM so we can measure it
+        requestAnimationFrame(() => {
+            this.positionTooltip(tooltip, step, targetElement);
+        });
+    }
+
+    findFirstVisibleChange() {
+        const changes = document.querySelectorAll('.panel-content .addition, .panel-content .deletion');
+        
+        for (let change of changes) {
+            const rect = change.getBoundingClientRect();
+            // Check if in viewport
+            if (rect.top >= 0 && rect.top < window.innerHeight - 200) {
+                return change;
+            }
+        }
+        
+        // If none in viewport, return first one
+        return changes[0];
+    }
+
+    createTooltip(step) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tutorial-tooltip';
+        tooltip.id = 'tutorialTooltip';
+        
+        let buttonsHtml = '';
+        if (step.showNext) {
+            buttonsHtml += `<button class="tutorial-btn tutorial-btn-primary" id="tutorialNext">Next</button>`;
+        }
+        if (step.finalStep) {
+            buttonsHtml += `<button class="tutorial-btn tutorial-btn-primary" id="tutorialDone">Got it!</button>`;
+        }
+        if (step.showSkip) {
+            buttonsHtml += `<button class="tutorial-btn tutorial-btn-secondary" id="tutorialSkip">Skip Tutorial</button>`;
+        }
+        
+        tooltip.innerHTML = `
+            ${this.currentStep > 0 ? `<div class="tutorial-step-indicator">Step ${this.currentStep + 1} of ${this.steps.length}</div>` : ''}
+            <h3>${step.title}</h3>
+            <p>${step.content}</p>
+            <div class="tutorial-tooltip-buttons">
+                ${buttonsHtml}
+            </div>
+        `;
+        
+        // Add event listeners
+        setTimeout(() => {
+            const nextBtn = document.getElementById('tutorialNext');
+            const skipBtn = document.getElementById('tutorialSkip');
+            const doneBtn = document.getElementById('tutorialDone');
+            
+            if (nextBtn) nextBtn.onclick = () => this.nextStep();
+            if (skipBtn) skipBtn.onclick = () => this.skip();
+            if (doneBtn) doneBtn.onclick = () => this.complete();
+        }, 0);
+        
+        return tooltip;
+    }
+
+    highlightElement(element) {
+        if (!element) return;
+        
+        // Scroll element into view if needed
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        setTimeout(() => {
+            const rect = element.getBoundingClientRect();
+            const highlight = document.createElement('div');
+            highlight.className = 'tutorial-highlight';
+            highlight.id = 'tutorialHighlight';
+            highlight.style.left = `${rect.left - 5}px`;
+            highlight.style.top = `${rect.top - 5}px`;
+            highlight.style.width = `${rect.width + 10}px`;
+            highlight.style.height = `${rect.height + 10}px`;
+            
+            document.body.appendChild(highlight);
+        }, 300);
+    }
+
+    positionTooltip(tooltip, step, targetElement) {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const margin = 20;
+        
+        // Center position (no target)
+        if (step.position === 'center' || !targetElement) {
+            const left = (viewportWidth - tooltipRect.width) / 2;
+            const top = (viewportHeight - tooltipRect.height) / 2;
+            
+            tooltip.style.left = `${Math.max(margin, left)}px`;
+            tooltip.style.top = `${Math.max(margin, top)}px`;
+            tooltip.style.transform = 'none';
+            return;
+        }
+        
+        const targetRect = targetElement.getBoundingClientRect();
+        let left, top;
+        
+        // Position relative to target
+        if (step.position === 'below') {
+            // Center horizontally, below target
+            left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
+            top = targetRect.bottom + 20;
+            
+            // Keep on screen horizontally
+            if (left < margin) left = margin;
+            if (left + tooltipRect.width > viewportWidth - margin) {
+                left = viewportWidth - tooltipRect.width - margin;
+            }
+            
+            // If tooltip would go off bottom, position above instead
+            if (top + tooltipRect.height > viewportHeight - margin) {
+                top = targetRect.top - tooltipRect.height - 20;
+            }
+            
+        } else if (step.position === 'above') {
+            // Center horizontally, above target
+            left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
+            top = targetRect.top - tooltipRect.height - 20;
+            
+            // Keep on screen horizontally
+            if (left < margin) left = margin;
+            if (left + tooltipRect.width > viewportWidth - margin) {
+                left = viewportWidth - tooltipRect.width - margin;
+            }
+            
+            // If tooltip would go off top, position below instead
+            if (top < margin) {
+                top = targetRect.bottom + 20;
+            }
+        }
+        
+        // Final boundary check
+        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+        
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+        tooltip.style.transform = 'none';
+    }
+
+    cleanup() {
+        const overlay = document.getElementById('tutorialOverlay');
+        const tooltip = document.getElementById('tutorialTooltip');
+        const highlight = document.getElementById('tutorialHighlight');
+        
+        if (overlay) overlay.remove();
+        if (tooltip) tooltip.remove();
+        if (highlight) highlight.remove();
+    }
+
+    nextStep() {
+        this.cleanup();
+        this.currentStep++;
+        
+        if (this.currentStep < this.steps.length) {
+            setTimeout(() => this.showStep(), 100);
+        } else {
+            this.complete();
+        }
+    }
+
+    skip() {
+        this.cleanup();
+        this.markComplete();
+    }
+
+    complete() {
+        this.cleanup();
+        this.markComplete();
+    }
+}
+
+// Initialize tutorial when a diff panel is first shown
+let tutorialInstance = null;
+
+function startTutorialIfNeeded() {
+    // Only start if we're on a diff panel
+    const currentPanel = document.querySelector('.comparison-slider').children[currentPosition];
+    if (!currentPanel || !currentPanel.classList.contains('diff-panel')) return;
+    
+    // Only start once
+    if (tutorialInstance) return;
+    
+    // Wait for annotations to be set up and DOM to settle
+    setTimeout(() => {
+        tutorialInstance = new DiffTutorial();
+        tutorialInstance.start();
+    }, 800);
+}
+
+
+function startTutorialIfNeeded() {
+    // Only start if we're on a diff panel
+    const currentPanel = document.querySelector('.comparison-slider').children[currentPosition];
+    if (!currentPanel || !currentPanel.classList.contains('diff-panel')) return;
+    
+    // Only start once
+    if (tutorialInstance) return;
+    
+    // Create and start tutorial
+    tutorialInstance = new DiffTutorial();
+    
+    // Small delay to ensure DOM is ready
+    setTimeout(() => {
+        tutorialInstance.start();
+    }, 500);
+}
+
+// Call this in your existing updateSliderPosition function
+// Add this at the end of updateSliderPosition(), just before the final closing brace:
+
+// Helper function to generate individual revision item HTML
+function generateRevisionItem(item, index, total, className) {
+    return `
+        <div class="revision-item ${className}" style="margin: 10px 0;">
+            <div style="font-size: 0.85rem; color: #999; margin-bottom: 5px;">
+                Change ${index + 1} of ${total}
+            </div>
+            <div class="revision-text">
+                "${item.text}"
+            </div>
+            <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                ${item.wordCount} word${item.wordCount !== 1 ? 's' : ''}, ${item.charCount} character${item.charCount !== 1 ? 's' : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Toggle function - add this OUTSIDE DOMContentLoaded, at the global scope
+window.toggleRevisionSection = function(sectionId, count) {
+    const hiddenSection = document.getElementById(`${sectionId}-hidden`);
+    const button = document.getElementById(`${sectionId}-btn`);
+    
+    if (hiddenSection.style.display === 'none') {
+        // Expand
+        hiddenSection.style.display = 'block';
+        button.textContent = 'Show Less';
+    } else {
+        // Collapse
+        hiddenSection.style.display = 'none';
+        button.textContent = `Show All (${count} more)`;
+    }
+};
 
 
 
@@ -4198,7 +4958,13 @@ document.addEventListener('DOMContentLoaded', function() {
             revisionReportModal.style.display = 'none';
         }
     }
-    
+
+    // Send to Gmail button
+    const sendToGmailBtn = document.getElementById('sendToGmailBtn');
+    if (sendToGmailBtn) {
+        sendToGmailBtn.addEventListener('click', sendToGmailDraft);
+    }
+        
     // Close modal when clicking outside
     window.onclick = function(event) {
         if (event.target === revisionReportModal) {
