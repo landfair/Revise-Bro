@@ -1810,7 +1810,7 @@
 
 
 
-       const quotes = [
+        const quotes = [
     { text: "By the time I am nearing the end of a story, the first part will have been reread and altered and corrected at least one hundred and fifty times. I am suspicious of both facility and speed. Good writing is essentially rewriting.", author: "Roald Dahl" },
     { text: "I'm a rewriter. That's the part I like best...once I have a pile of paper to work with, it's like having the pieces of a puzzle. I just have to put the pieces together to make a picture.", author: "Judy Blume" },
     { text: "The beautiful part of writing is that you don't have to get it right the first time, unlike, say, a brain surgeon.", author: "Robert Cormier" },
@@ -1822,11 +1822,11 @@
     { text: "I'm not a very good writer, but I'm an excellent rewriter.", author: "James Michener" },
     { text: "The best advice I can give is to put it away until you can read it with new eyes.", author: "Neil Gaiman" },
     { text: "Revision is one of the exquisite pleasures of writing.", author: "Bernard Malamud" },
-    { text: "The writer’s life is a life of revisions.", author: "Jonathan Franzen" },
+    { text: "The writer's life is a life of revisions.", author: "Jonathan Franzen" },
     { text: "The novel really happens in the revisions.", author: "Tama Janowitz" },
     { text: "I love revisions...We can't go back and revise our lives, but revising what we have written comes closest.", author: "Katherine Paterson" },
     { text: "Writing and rewriting are a constant search for what it is one is saying.", author: "John Updike" },
-    { text: "Reread, rewrite, reread, rewrite. If it still doesn’t work, throw it away.", author: "Helen Dunmore" },
+    { text: "Reread, rewrite, reread, rewrite. If it still doesn't work, throw it away.", author: "Helen Dunmore" },
     { text: "I edit as I write. I revise endlessly. I don't go forward until I know that what I've written is as good as I can make it.", author: "Anita Shreve" }
 ];
 
@@ -1834,58 +1834,52 @@ const titleContainer = document.querySelector('.header-title');
 const titleEl = titleContainer.querySelector('h1');
 const originalTitle = titleEl.innerHTML;
 
-let currentQuote = 0;
 let showingTitle = true;
 
 /**
  * Handles the fade-out/fade-in transition between title and quotes.
  */
- function cycleDisplay() {
-  // Trigger fizzle-out animation
-  titleEl.classList.remove('fizzle-in');
-  void titleEl.offsetWidth; // force reflow
-  titleEl.classList.add('fizzle-out');
+function cycleDisplay() {
+    // Trigger fizzle-out animation
+    titleEl.classList.remove('fizzle-in');
+    void titleEl.offsetWidth; // force reflow
+    titleEl.classList.add('fizzle-out');
 
-  setTimeout(() => {
-    titleEl.classList.remove('fizzle-out');
+    setTimeout(() => {
+        titleEl.classList.remove('fizzle-out');
 
-    let nextDelay;
-    
-    if (showingTitle) {
-      // Show random quote
-      const randomIndex = Math.floor(Math.random() * quotes.length);
-      const quote = quotes[randomIndex];
-      titleContainer.classList.add('quote-mode');
-      titleEl.innerHTML = `
-        ${quote.text}
-        <span class="quote-author">— ${quote.author}</span>
-      `;
-      showingTitle = false;
-      nextDelay = 10000; // Show quote for 10 seconds
-    } else {
-      // Show main title again
-      titleContainer.classList.remove('quote-mode');
-      titleEl.innerHTML = originalTitle;
-      showingTitle = true;
-      nextDelay = 30000; // Show title for 30 seconds
-    }
+        let nextDelay;
+        
+        if (showingTitle) {
+            // Show random quote
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const quote = quotes[randomIndex];
+            titleContainer.classList.add('quote-mode');
+            titleEl.innerHTML = `
+                ${quote.text}
+                <span class="quote-author">— ${quote.author}</span>
+            `;
+            showingTitle = false;
+            nextDelay = 10000; // Show quote for 10 seconds
+        } else {
+            // Show main title again
+            titleContainer.classList.remove('quote-mode');
+            titleEl.innerHTML = originalTitle;
+            showingTitle = true;
+            nextDelay = 30000; // Show title for 30 seconds
+        }
 
-    // Trigger fizzle-in
-    void titleEl.offsetWidth;
-    titleEl.classList.add('fizzle-in');
-    
-    // Schedule next transition with appropriate delay
-    setTimeout(cycleDisplay, nextDelay);
-  }, 1200);
+        // Trigger fizzle-in
+        void titleEl.offsetWidth;
+        titleEl.classList.add('fizzle-in');
+        
+        // Schedule next transition with appropriate delay
+        setTimeout(cycleDisplay, nextDelay);
+    }, 1200);
 }
 
 // Start showing title for 30 seconds before first quote
 setTimeout(cycleDisplay, 30000);
-// Start after 10s delay, then alternate every 30s
-setTimeout(() => {
-  cycleDisplay();
-  setInterval(cycleDisplay, 30000);
-}, 10000);
         
 // Add this function anywhere in your script section (before generateAdvancedDiff is called)
 function determineRevisionLevel(text) {
