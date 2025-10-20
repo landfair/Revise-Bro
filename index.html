@@ -445,18 +445,32 @@
     box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
 }
 
-        @media (max-width: 768px) {
-            .diff-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .new-comparison-btn {
-                align-self: stretch;
-                text-align: center;
-            }
-        }
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px 15px;
+    }
+    
+    .header-title h1 {
+        font-size: 1.8rem;
+    }
+    
+    .logo-container {
+        height: 35px;
+    }
+    
+    .header-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .options-dropdown-menu {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
         
         .nav-arrow {
             position: absolute;
@@ -1645,23 +1659,17 @@
   100% { opacity: 1; filter: blur(0px); }
 }
 
-/* Centered, fixed-width quote area that won't stretch header */
+/* Quote mode stays in flex layout to adapt to available space */
 .header-title.quote-mode {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 50%;
-  transform: translate(-50%, -50%); /* vertically center inside header */
-  width: 420px;          /* FIXED max pixel width — change this if you want narrower/wider */
-  max-width: 420px;
-  padding: 0 12px;       /* breathing room for longer lines */
+  flex-grow: 1;
+  min-width: 0;
+  max-width: 500px; /* Maximum width for quotes, but can shrink if needed */
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  pointer-events: none;  /* prevents overlapping clicks to header buttons/logo */
-  z-index: 20;           /* keep it above header background but below controls if needed */
+  padding: 0 20px; /* Side padding to prevent touching buttons */
 }
 
 .header-title.quote-mode h1 {
@@ -1674,9 +1682,7 @@
   -webkit-text-fill-color: initial !important;
   color: var(--primary-dark) !important;
   word-break: break-word;
-  pointer-events: none;
 }
-
 
 .header-title.quote-mode .quote-author {
   font-size: 0.85rem;
@@ -1684,7 +1690,6 @@
   font-weight: 600;
   color: var(--accent-light);
   margin-top: 6px;
-  pointer-events: none;
 }
 
 /* Optional: make fizzle stronger for visibility in smaller text */
@@ -1848,6 +1853,88 @@
     margin-bottom: 10px;
 }
 
+/* Options Dropdown Styles */
+.options-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.options-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 5px);
+    background-color: white;
+    min-width: 180px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    z-index: 1000;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.options-dropdown-menu.show {
+    display: block;
+    animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    text-align: left;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-standard);
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    
+}
+
+.dropdown-item[href] {
+    text-decoration: none;
+}
+
+.dropdown-item[href]:visited {
+    color: var(--text-color);
+}
+
+.dropdown-item[href]:hover {
+    color: var(--primary-color);
+}
+
+.dropdown-item-danger {
+    color: #dc3545;
+}
+
+.dropdown-item-danger:hover {
+    background-color: #fff5f5;
+    color: #c82333;
+}
+
 
 
     </style>
@@ -1870,13 +1957,24 @@
         <div class="header-title">
             <h1>u even revise, bro?</h1>
         </div>
-       <!-- Replace the existing header-buttons div with this: -->
+       <!-- Consolidated header buttons with dropdown -->
+       <!-- Consolidated header buttons with dropdown -->
        <div class="header-buttons">
-        <button class="about-btn" id="aboutButton">About</button>
-        <button class="about-btn" id="restartLandingTourBtn">Take Tour</button>
-        <button class="about-btn" id="clearDataButton" style="background: #dc3545; border-color: #dc3545; color: white;">Clear Data</button>
-        <button class="new-comparison-btn hidden" id="headerNewComparisonBtn">New Comparison</button>
-    </div>
+            <!-- Options Dropdown -->
+            <div class="options-dropdown">
+                <button class="about-btn" id="optionsDropdownBtn">
+                    Options ∨
+                </button>
+                <div class="options-dropdown-menu" id="optionsDropdownMenu">
+                    <button class="dropdown-item" id="aboutButton">About</button>
+                    <button class="dropdown-item" id="restartLandingTourBtn">Take Tour</button>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfjLT0XMpp4k__8cgiwBS2_JTZnrRKPRXDktcvcdgH8fYSDTA/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="dropdown-item">Report a Bug</a>
+                    <button class="dropdown-item dropdown-item-danger" id="clearDataButton">Clear Data</button>
+                </div>
+            </div>
+            
+            <button class="new-comparison-btn hidden" id="headerNewComparisonBtn">New Comparison</button>
+        </div>
     </header>
 
     
@@ -1889,7 +1987,7 @@
             
             <div class="tab-container">
                 <button class="tab-btn active" id="uploadTab">Upload Files</button>
-                <button class="tab-btn" id="examplesTab">Example Essays from <i>Mercer Street</i></button>
+                <button class="tab-btn" id="examplesTab"><i>Mercer Street</i></button>
             </div>
             
             <div id="uploadContent" class="tab-content active">
@@ -1926,6 +2024,32 @@
             </div>
             
             <div id="examplesContent" class="tab-content">
+                <div style="margin: 0 0 90px 0;">
+                    <h3 style="color: var(--primary-dark); margin-bottom: 15px; font-size: 1.3rem;">Example Essays from <i>Mercer Street</i></h3>
+                    <p style="margin-bottom: 12px; line-height: 1.6; color: var(--text-color);">
+                        <i>Mercer Street</i> is the annual anthology of essays composed by students in the Expository Writing Program at New York University. Each year, approximately twenty essays are selected from hundreds of submissions, representing the rigorous and thoughtful work accomplished in our courses.
+                    </p>
+                    <p style="margin-bottom: 20px; line-height: 1.6; color: var(--text-color);">
+                        The drafts below offer a window into the writing processes of exceptional undergraduate writers. Draft by draft, you can see how these students developed and refined their ideas iteratively, moving from early explorations to polished final arguments. These examples demonstrate the transformative power of sustained revision.
+                    </p>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <a href="https://wp.nyu.edu/mercerstreet/" target="_blank" rel="noopener noreferrer" style="
+                            display: inline-block;
+                            background: var(--primary-gradient);
+                            color: white;
+                            border: none;
+                            border-radius: 25px;
+                            padding: 12px 28px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            text-decoration: none;
+                            transition: var(--transition-standard);
+                            box-shadow: 0 3px 10px rgba(87, 6, 140, 0.2);
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(87, 6, 140, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 3px 10px rgba(87, 6, 140, 0.2)'">
+                            Visit Mercer Street
+                        </a>
+                    </div>
+                </div>
                 <div class="examples-grid">
                     <div class="example-card" data-essay="essay1">
                         <h4>Ping! Panic! Repeat!</h4>
@@ -3006,6 +3130,29 @@ document.addEventListener('DOMContentLoaded', function() {
         clearDataButton.addEventListener('click', clearAllData);
     }
   
+// Options Dropdown Toggle
+const optionsDropdownBtn = document.getElementById('optionsDropdownBtn');
+    const optionsDropdownMenu = document.getElementById('optionsDropdownMenu');
+    
+    if (optionsDropdownBtn && optionsDropdownMenu) {
+        optionsDropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            optionsDropdownMenu.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!optionsDropdownBtn.contains(e.target) && !optionsDropdownMenu.contains(e.target)) {
+                optionsDropdownMenu.classList.remove('show');
+            }
+        });
+        
+        // Close dropdown when clicking a menu item
+        optionsDropdownMenu.addEventListener('click', function() {
+            optionsDropdownMenu.classList.remove('show');
+        });
+    }
+
     // Tab switching
     document.getElementById('uploadTab').addEventListener('click', function() {
         switchTab('uploadTab', 'uploadContent');
@@ -3149,7 +3296,6 @@ if (restartLandingTourBtn) {
         }
     });
 
-    // Add this section in DOMContentLoaded, after the annotations modal setup:
 
     // PDF Options Modal
     const pdfOptionsModal = document.getElementById('pdfOptionsModal');
@@ -3179,6 +3325,12 @@ if (restartLandingTourBtn) {
             pdfOptionsModal.style.display = 'none';
         }
     });
+
+    const sendToGmailBtn = document.getElementById('sendToGmailBtn');
+    if (sendToGmailBtn) {
+        sendToGmailBtn.addEventListener('click', sendToGmailDraft);
+    }
+    
     
     // Toggle between table and detail view for revision report
     const tableViewBtn = document.getElementById('tableViewBtn');
@@ -3263,7 +3415,14 @@ const observer = new MutationObserver(() => {
 observer.observe(document.getElementById('comparisonResults'), {
     attributes: true,
     attributeFilter: ['style']
-})});
+})
+    // Start landing page tutorial after a short delay
+    setTimeout(() => {
+        landingTutorial = new LandingPageTutorial();
+        landingTutorial.start();
+    }, 1000);
+
+});
 
         // Data structure to store revision analysis
         let revisionAnalysis = {
@@ -4933,31 +5092,69 @@ class LandingPageTutorial {
         this.currentStep = 0;
         this.steps = [
             {
-                title: "Welcome! 👋",
-                content: "This tool helps writers visualize and reflect on their revision process. Let me show you how to get started!",
+                title: "Welcome!",
+                content: "Expert writers often say that writing is 99 percent revision. That's not just a comment on how difficult writing can be, but also suggests how writing skills are <i> actually </i> developed. <br> <br> At EWP, we believe people improve as writers when they learn to revise more holistically, more strategically, and more often.",
                 position: "center",
                 showNext: true,
                 showSkip: true
             },
             {
-                title: "Upload Your Drafts 📁",
-                content: "Click here or drag and drop multiple drafts of the same document. The tool works best with 2-4 versions showing your revision progression.",
+                title: "About this site",
+                content: "This site draws your attention to the longest and most important part of the writing process: revision. <br> <br> This tool invites you to reflect upon the nature, scope, goal, and impact of your changes. After all, honing your revision skills means honing your writing skills.",
+                position: "center",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "A Research-Backed Approach",
+                content: "In a landmark study, researchers compared the revision habits of novice and expert writers. Their findings revealed two fundamentally different approaches to revision.",
+                citation: `Sommers, Nancy. "Revision Strategies of Student Writers and Experienced Adult Writers." <i>College Composition and Communication</i>, vol. 31, no. 4, 1980, pp. 378–88.<br><br>`,
+                position: "center",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "What 'Revision' Means to Novice Writers",
+                content: "For novices, revising involves mostly small changes like word substitutions or addressing mechanical errors. This minimalist approach reflects a belief that writing is primarily a tool for expression, requiring little revision.",
+                citation: `Sommers, Nancy. "Revision Strategies of Student Writers and Experienced Adult Writers." <i>College Composition and Communication</i>, vol. 31, no. 4, 1980, pp. 378–88.<br><br>`,
+                position: "center",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "What 'Revision' Means to Expert Writers",
+                content: "For experts, revision means much more. It can include adding, deleting, or rewriting entire paragraphs, introducing new evidence, or transforming initial assumptions. <br><br> Fundamentally, these practices reflect a radically different view of writing: It's not just a tool for expressing our best ideas, but also for generating, testing, and refining them.",
+                citation: `Sommers, Nancy. "Revision Strategies of Student Writers and Experienced Adult Writers." <i>College Composition and Communication</i>, vol. 31, no. 4, 1980, pp. 378–88.<br><br>`,
+                position: "center",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "How We Aim to Help",
+                content: "By examining the nature and scope of revisions, this tool helps you move beyond surface changes and begin utilizing writing to discover, test, and refine your best ideas.",
+                position: "center",
+                showNext: true,
+                showSkip: true
+            },
+            {
+                title: "Getting Started: Upload Your Drafts",
+                content: "Click here or drag and drop multiple drafts of the same document. The tool works best with two to four versions showing your revision progression.",
                 target: ".file-input-container",
                 position: "below",
                 showNext: true,
                 showSkip: true
             },
             {
-                title: "Or Use Google Drive ☁️",
-                content: "Connect your Google Drive to import documents directly. This makes it easy to compare drafts stored in the cloud!",
+                title: "Alternative: Google Drive Integration",
+                content: "You can also connect your Google Drive to import documents directly. This makes it easy to compare drafts stored in the cloud.",
                 target: "#googleDriveBtn",
                 position: "above",
                 showNext: true,
                 showSkip: true
             },
             {
-                title: "Try Example Essays 📚",
-                content: "Not ready to upload your own work? Check out the 'Example Essays' tab to see real student revision processes from NYU's Mercer Street journal.",
+                title: "Explore Example Essays",
+                content: "Not ready to upload your own work? The Example Essays tab features real student revision processes from NYU's Mercer Street journal. You can see how exceptional undergraduate writers developed their ideas through multiple drafts.",
                 target: "#examplesTab",
                 position: "below",
                 showNext: false,
@@ -4987,11 +5184,18 @@ class LandingPageTutorial {
     showStep() {
         const step = this.steps[this.currentStep];
         
-        // Create overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'tutorial-overlay active';
-        overlay.id = 'landingTutorialOverlay';
-        document.body.appendChild(overlay);
+        // Create or get overlay
+        let overlay = document.getElementById('landingTutorialOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'tutorial-overlay active';
+            overlay.id = 'landingTutorialOverlay';
+            document.body.appendChild(overlay);
+        }
+        
+        // Remove old highlight if exists
+        const oldHighlight = document.getElementById('landingTutorialHighlight');
+        if (oldHighlight) oldHighlight.remove();
         
         // Find target element
         let targetElement = null;
@@ -4999,9 +5203,17 @@ class LandingPageTutorial {
             targetElement = document.querySelector(step.target);
         }
         
-        // Create tooltip
-        const tooltip = this.createTooltip(step);
-        document.body.appendChild(tooltip);
+        // Create or update tooltip
+        let tooltip = document.getElementById('landingTutorialTooltip');
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.className = 'tutorial-tooltip';
+            tooltip.id = 'landingTutorialTooltip';
+            document.body.appendChild(tooltip);
+        }
+        
+        // Update tooltip content
+        this.updateTooltipContent(tooltip, step);
         
         // Highlight target if found
         if (targetElement) {
@@ -5014,43 +5226,68 @@ class LandingPageTutorial {
         });
     }
 
-    createTooltip(step) {
-        const tooltip = document.createElement('div');
-        tooltip.className = 'tutorial-tooltip';
-        tooltip.id = 'landingTutorialTooltip';
-        
+    updateTooltipContent(tooltip, step) {
         let buttonsHtml = '';
+        
+        // Add Back button (except on first step)
+        if (this.currentStep > 0) {
+            buttonsHtml += `<button class="tutorial-btn tutorial-btn-secondary" id="landingTutorialBack">Back</button>`;
+        }
+        
         if (step.showNext) {
             buttonsHtml += `<button class="tutorial-btn tutorial-btn-primary" id="landingTutorialNext">Next</button>`;
         }
         if (step.finalStep) {
-            buttonsHtml += `<button class="tutorial-btn tutorial-btn-primary" id="landingTutorialDone">Got it!</button>`;
+            buttonsHtml += `<button class="tutorial-btn tutorial-btn-primary" id="landingTutorialDone">Get Started</button>`;
         }
         if (step.showSkip) {
             buttonsHtml += `<button class="tutorial-btn tutorial-btn-secondary" id="landingTutorialSkip">Skip Tour</button>`;
         }
         
+        // Add citation if present
+        const citationHtml = step.citation ? 
+            `<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0; font-size: 0.75rem; line-height: 1.4; color: #666; text-align: left;">${step.citation}</div>` : '';
+        
         tooltip.innerHTML = `
-            ${this.currentStep > 0 ? `<div class="tutorial-step-indicator">Step ${this.currentStep + 1} of ${this.steps.length}</div>` : ''}
+            <div class="tutorial-step-indicator">Step ${this.currentStep + 1} of ${this.steps.length}</div>
             <h3>${step.title}</h3>
             <p>${step.content}</p>
+            ${citationHtml}
             <div class="tutorial-tooltip-buttons">
                 ${buttonsHtml}
             </div>
         `;
         
-        // Add event listeners
+        // Re-add event listeners after content update
         setTimeout(() => {
+            const backBtn = document.getElementById('landingTutorialBack');
             const nextBtn = document.getElementById('landingTutorialNext');
             const skipBtn = document.getElementById('landingTutorialSkip');
             const doneBtn = document.getElementById('landingTutorialDone');
             
+            if (backBtn) backBtn.onclick = () => this.previousStep();
             if (nextBtn) nextBtn.onclick = () => this.nextStep();
             if (skipBtn) skipBtn.onclick = () => this.skip();
             if (doneBtn) doneBtn.onclick = () => this.complete();
         }, 0);
+    }
+
+    previousStep() {
+        if (this.currentStep > 0) {
+            this.currentStep--;
+            this.showStep();
+        }
+    }
+
+    nextStep() {
+        this.currentStep++;
         
-        return tooltip;
+        if (this.currentStep < this.steps.length) {
+            // Just update the step without cleanup
+            this.showStep();
+        } else {
+            this.complete();
+        }
     }
 
     highlightElement(element) {
@@ -5124,6 +5361,17 @@ class LandingPageTutorial {
         tooltip.style.transform = 'none';
     }
 
+    nextStep() {
+        this.currentStep++;
+        
+        if (this.currentStep < this.steps.length) {
+            // Just update the step without cleanup
+            this.showStep();
+        } else {
+            this.complete();
+        }
+    }
+
     cleanup() {
         const overlay = document.getElementById('landingTutorialOverlay');
         const tooltip = document.getElementById('landingTutorialTooltip');
@@ -5132,17 +5380,6 @@ class LandingPageTutorial {
         if (overlay) overlay.remove();
         if (tooltip) tooltip.remove();
         if (highlight) highlight.remove();
-    }
-
-    nextStep() {
-        this.cleanup();
-        this.currentStep++;
-        
-        if (this.currentStep < this.steps.length) {
-            setTimeout(() => this.showStep(), 100);
-        } else {
-            this.complete();
-        }
     }
 
     skip() {
@@ -5159,16 +5396,6 @@ class LandingPageTutorial {
 // Initialize landing page tutorial
 let landingTutorial = null;
 
-// Start tutorial when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // ... your existing DOMContentLoaded code ...
-    
-    // Start landing page tutorial after a short delay
-    setTimeout(() => {
-        landingTutorial = new LandingPageTutorial();
-        landingTutorial.start();
-    }, 1000);
-});
 
 // Call this in your existing updateSliderPosition function
 // Add this at the end of updateSliderPosition(), just before the final closing brace:
@@ -5190,7 +5417,6 @@ function generateRevisionItem(item, index, total, className) {
     `;
 }
 
-// Toggle function - add this OUTSIDE DOMContentLoaded, at the global scope
 window.toggleRevisionSection = function(sectionId, count) {
     const hiddenSection = document.getElementById(`${sectionId}-hidden`);
     const button = document.getElementById(`${sectionId}-btn`);
@@ -5231,81 +5457,9 @@ function generateRevisionReport() {
     }
 }
 
-// Add event listeners when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize modal functionality
-    const revisionReportModal = document.getElementById('revisionReportModal');
-    const reportModalClose = document.getElementById('reportModalClose');
-    
-    if (reportModalClose) {
-        reportModalClose.onclick = function() {
-            revisionReportModal.style.display = 'none';
-        }
-    }
 
-    // Send to Gmail button
-    const sendToGmailBtn = document.getElementById('sendToGmailBtn');
-    if (sendToGmailBtn) {
-        sendToGmailBtn.addEventListener('click', sendToGmailDraft);
-    }
-        
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        if (event.target === revisionReportModal) {
-            revisionReportModal.style.display = 'none';
-        }
-    }
     
-    // Add generate report button to the diff panels
-    const addReportButton = () => {
-        const comparisonResults = document.getElementById('comparisonResults');
-        if (comparisonResults && !document.getElementById('generateReportBtn')) {
-            const btn = document.createElement('button');
-            btn.id = 'generateReportBtn';
-            btn.className = 'generate-report-btn';
-            btn.textContent = 'Generate Revision Report';
-            btn.onclick = generateRevisionReport;
-            comparisonResults.appendChild(btn);
-        }
-    };
-    
-    // Check periodically if comparison results are shown
-    const observer = new MutationObserver(() => {
-        if (document.getElementById('comparisonResults').style.display !== 'none') {
-            addReportButton();
-        }
-    });
-    
-    observer.observe(document.getElementById('comparisonResults'), {
-        attributes: true,
-        attributeFilter: ['style']
-    });
-    
-    // Toggle between table and detail view
-    document.getElementById('tableViewBtn').addEventListener('click', function() {
-        this.classList.add('active');
-        document.getElementById('detailViewBtn').classList.remove('active');
-        
-        const currentPanel = document.querySelector('.comparison-slider').children[currentPosition];
-        if (currentPanel && currentPanel.classList.contains('diff-panel')) {
-            const diffContent = currentPanel.querySelector('.panel-content').innerHTML;
-            const analysis = analyzeRevisions(diffContent);
-            document.getElementById('reportContent').innerHTML = generateTableView(analysis);
-        }
-    });
-    
-    document.getElementById('detailViewBtn').addEventListener('click', function() {
-        this.classList.add('active');
-        document.getElementById('tableViewBtn').classList.remove('active');
-        
-        const currentPanel = document.querySelector('.comparison-slider').children[currentPosition];
-        if (currentPanel && currentPanel.classList.contains('diff-panel')) {
-            const diffContent = currentPanel.querySelector('.panel-content').innerHTML;
-            const analysis = analyzeRevisions(diffContent);
-            document.getElementById('reportContent').innerHTML = generateDetailedView(analysis);
-        }
-    });
-});
+
     </script>
 </body>
 </html>
