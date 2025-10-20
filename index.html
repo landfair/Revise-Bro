@@ -3,8 +3,6 @@
 <head>
     
     <meta charset="UTF-8">
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://accounts.google.com/gsi/client"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
@@ -255,6 +253,12 @@
             margin: 0;
             display: inline-block;
             box-shadow: none;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
         }
         
         .tab-btn:hover {
@@ -1963,89 +1967,25 @@
     <div class="container">
         
         
-        <div class="upload-section">
-            <h2>Compare Drafts</h2>
+        <div class="upload-section" id="uploadSection">
+            <h2>Compare Your Drafts</h2>
+            <p class="subtitle">Upload 2-4 versions of your document to visualize your revision process</p>
             
-            <div class="tab-container">
-                <button class="tab-btn active" id="uploadTab">Upload Files</button>
-                <button class="tab-btn" id="examplesTab"><i>Mercer Street</i></button>
+            <div class="file-input-container" id="fileInputContainer">
+                <div class="upload-icon">📄</div>
+                <p><strong>Drag and drop files here</strong></p>
+                <p style="color: #666; font-size: 0.9em; margin: 10px 0;">
+                    Supported formats: .txt, .docx<br>
+                    <em>All processing happens locally in your browser - files are never uploaded to a server</em>
+                </p>
+                <input type="file" id="fileInput" multiple accept=".txt,.docx" style="display: none;">
+                <button class="browse-btn" id="browseBtn">Browse Files</button>
             </div>
             
-            <div id="uploadContent" class="tab-content active">
-                <div class="upload-area">
-                    <div class="file-input-container">
-                        <label for="fileInput" class="file-input-label">
-                            <div class="upload-icon">📁</div>
-                            <div class="upload-text">
-                                <strong>Choose files to compare</strong>
-                                <p>Select multiple text files (.txt, .docx) or drag and drop them here</p>
-                            </div>
-                        </label>
-                        <input type="file" id="fileInput" multiple accept=".txt,.docx,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;">                    </div>
-                    <!-- NEW: Google Drive button -->
-        <div style="margin: 20px 0; text-align: center;">
-            <div style="display: inline-block; margin: 0 10px; color: #666;">OR</div>
-        </div>
-        
-        <button id="googleDriveBtn" class="compare-btn" style="background: #4285f4;">
-            <svg style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
-                <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
-                <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
-                <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
-                <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
-                <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
-                <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
-            </svg>
-            Select from Google Drive
-        </button>
-                    
-                        <div id="fileList" class="file-list" style="display: none;"></div>
-                    <button id="compareFiles" class="compare-btn" style="display: none;">Compare Files</button>
-                </div>
-            </div>
-            
-            <div id="examplesContent" class="tab-content">
-                <div style="margin: 0 0 90px 0;">
-                    <h3 style="color: var(--primary-dark); margin-bottom: 15px; font-size: 1.3rem;">Example Essays from <i>Mercer Street</i></h3>
-                    <p style="margin-bottom: 12px; line-height: 1.6; color: var(--text-color);">
-                        <i>Mercer Street</i> is the annual anthology of essays composed by students in the Expository Writing Program at New York University. Each year, approximately twenty essays are selected from hundreds of submissions, representing the rigorous and thoughtful work accomplished in our courses.
-                    </p>
-                    <p style="margin-bottom: 20px; line-height: 1.6; color: var(--text-color);">
-                        The drafts below offer a window into the writing processes of exceptional undergraduate writers. Draft by draft, you can see how these students developed and refined their ideas iteratively, moving from early explorations to polished final arguments. These examples demonstrate the transformative power of sustained revision.
-                    </p>
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <a href="https://wp.nyu.edu/mercerstreet/" target="_blank" rel="noopener noreferrer" style="
-                            display: inline-block;
-                            background: var(--primary-gradient);
-                            color: white;
-                            border: none;
-                            border-radius: 25px;
-                            padding: 12px 28px;
-                            font-size: 1rem;
-                            font-weight: 600;
-                            text-decoration: none;
-                            transition: var(--transition-standard);
-                            box-shadow: 0 3px 10px rgba(87, 6, 140, 0.2);
-                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(87, 6, 140, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 3px 10px rgba(87, 6, 140, 0.2)'">
-                            Visit Mercer Street
-                        </a>
-                    </div>
-                </div>
-                <div class="examples-grid">
-                    <div class="example-card" data-essay="essay1">
-                        <h4>Ping! Panic! Repeat!</h4>
-                        <p class="example-author">By Braden Ou</p>
-                        <p class="example-description">An ethnographic study exploring smartphone use.</p>
-                        <button class="example-btn">View All Drafts</button>
-                    </div>
-
-                    <div class="example-card" data-essay="essay2">
-                        <h4><i>An excerpt from </i>Simulated Systems and the Limits of Intuitive Learning</h4>
-                        <p class="example-author">By Srinivas Harish</p>
-                        <p class="example-description">Examining the affordance and limitations of gamified learning.</p>
-                        <button class="example-btn">View All Drafts</button>
-                    </div>
-                </div>
+            <!-- Privacy notice -->
+            <div style="max-width: 600px; margin: 20px auto; padding: 15px; background: #f0f7ff; border-left: 4px solid #2196F3; border-radius: 4px;">
+                <strong>🔒 Your Privacy:</strong> All document processing happens locally in your browser. 
+                Your files never leave your device.
             </div>
         </div>
         
@@ -2933,149 +2873,7 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
         // Wait for DOM to be loaded
         // Wait for DOM to be loaded
 
-// Google Drive Integration
-const GOOGLE_CLIENT_ID = '601467040379-qia7nfeno01vqtaemf41f463pr1cmhtg.apps.googleusercontent.com';
-const WORKER_URL = 'https://revise-bro.al4828.workers.dev';
-const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
-let tokenClient;
-let accessToken = null;
-let pickerInited = false;
-let gisInited = false;
 
-// Initialize Google Identity Services
-function gapiLoaded() {
-    gapi.load('client:picker', initializePicker);
-}
-
-async function initializePicker() {
-    // We don't need to load the full Drive client anymore
-    // The worker handles API calls
-    pickerInited = true;
-}
-
-function gisLoaded() {
-    tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: GOOGLE_CLIENT_ID,
-        scope: SCOPES,
-        callback: '', // defined later
-    });
-    gisInited = true;
-}
-
-// Handle Google Drive button click
-function handleGoogleDriveClick() {
-    tokenClient.callback = async (response) => {
-        if (response.error !== undefined) {
-            throw (response);
-        }
-        accessToken = response.access_token;
-        createPicker();
-    };
-
-    if (accessToken === null) {
-        // Prompt the user to select a Google Account and ask for consent
-        tokenClient.requestAccessToken({prompt: 'consent'});
-    } else {
-        // Skip display of account chooser and consent dialog
-        tokenClient.requestAccessToken({prompt: ''});
-    }
-}
-
-function createPicker() {
-    const view = new google.picker.DocsView(google.picker.ViewId.DOCS);
-    view.setMimeTypes('application/vnd.google-apps.document,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain');
-    
-    const picker = new google.picker.PickerBuilder()
-        .enableFeature(google.picker.Feature.NAV_HIDDEN)
-        .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
-        .setAppId(GOOGLE_CLIENT_ID.split('-')[0])
-        .setOAuthToken(accessToken)
-        .addView(view)
-        .addView(new google.picker.DocsUploadView())
-        // REMOVE THIS LINE: .setDeveloperKey(GOOGLE_API_KEY)
-        .setCallback(pickerCallback)
-        .build();
-    picker.setVisible(true);
-}
-
-// Handle file selection from Picker
-async function pickerCallback(data) {
-    if (data.action === google.picker.Action.PICKED) {
-        document.getElementById('loadingSpinner').style.display = 'flex';
-        
-        try {
-            for (const doc of data.docs) {
-                const fileId = doc.id;
-                const fileName = doc.name;
-                const mimeType = doc.mimeType;
-                
-                // Download and extract text from file
-                const text = await downloadAndExtractText(fileId, fileName, mimeType);
-                
-                // Add to uploaded files
-                const fileBlob = new Blob([text], { type: 'text/plain' });
-                fileBlob.name = fileName;
-                uploadedFiles.push(fileBlob);
-                addFileToList(fileBlob);
-            }
-            
-            // Show file list and compare button
-            const fileList = document.getElementById('fileList');
-            const compareBtn = document.getElementById('compareFiles');
-            
-            if (uploadedFiles.length > 0) {
-                fileList.style.display = 'block';
-                if (uploadedFiles.length >= 2) {
-                    compareBtn.style.display = 'block';
-                }
-            }
-            
-        } catch (error) {
-            showError('Error loading files from Google Drive: ' + error.message);
-        } finally {
-            document.getElementById('loadingSpinner').style.display = 'none';
-        }
-    }
-}
-
-// Download and extract text from Google Drive file
-// Download and extract text from Google Drive file (using worker)
-async function downloadAndExtractText(fileId, fileName, mimeType) {
-    let text = '';
-    
-    if (mimeType === 'application/vnd.google-apps.document') {
-        // Google Docs - export as plain text via worker
-        const response = await fetch(`${WORKER_URL}/drive/files/${fileId}/export?mimeType=text/plain`, {
-            headers: {
-                'Authorization': 'Bearer ' + accessToken
-            }
-        });
-        text = await response.text();
-        
-    } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        // Word document - download via worker and use mammoth
-        const response = await fetch(`${WORKER_URL}/drive/files/${fileId}?alt=media`, {
-            headers: {
-                'Authorization': 'Bearer ' + accessToken
-            }
-        });
-        
-        const arrayBuffer = await response.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-        text = result.value;
-        
-    } else {
-        // Plain text file via worker
-        const response = await fetch(`${WORKER_URL}/drive/files/${fileId}?alt=media`, {
-            headers: {
-                'Authorization': 'Bearer ' + accessToken
-            }
-        });
-        text = await response.text();
-    }
-    
-    return text;
-}
 
 // Initialize on page load
 window.addEventListener('load', () => {
@@ -3093,11 +2891,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show restore banner if there's saved data
     showRestoreBanner();
     
-    // Google Drive button
-    const googleDriveBtn = document.getElementById('googleDriveBtn');
-    if (googleDriveBtn) {
-        googleDriveBtn.addEventListener('click', handleGoogleDriveClick);
-    }
+ 
 
     // Clear data button
     const clearDataButton = document.getElementById('clearDataButton');
@@ -5009,14 +4803,7 @@ class LandingPageTutorial {
                 showNext: true,
                 showSkip: true
             },
-            {
-                title: "Alternative: Google Drive Integration",
-                content: "You can also connect your Google Drive to import documents directly. This makes it easy to compare drafts stored in the cloud.",
-                target: "#googleDriveBtn",
-                position: "above",
-                showNext: true,
-                showSkip: true
-            },
+        
             {
                 title: "Explore Example Essays",
                 content: "Not ready to upload your own work? The Example Essays tab features real student revision processes from NYU's Mercer Street journal. You can see how exceptional undergraduate writers developed their ideas through multiple drafts.",
