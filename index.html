@@ -1969,7 +1969,7 @@
                 <div style="max-width: 900px; margin: 0 auto;">
                     <h3 style="color: var(--primary-dark); margin-bottom: 15px;">Paste Your Drafts</h3>
                     <p style="margin-bottom: 15px; line-height: 1.6; color: var(--text-color);">
-                        Copy and paste your drafts below. Label each draft (e.g., "Draft 1", "First Draft", "Final") and paste the full text. You can compare 2-4 drafts.
+                        Copy and paste your drafts below. Label each draft (e.g., "Draft 1", "First Draft", "Final") and paste the full text. You can compare 2-5 drafts.
                     </p>
                     
                     <!-- Privacy Notice -->
@@ -1981,7 +1981,7 @@
                     
                     <div id="pasteContainer">
                         <!-- Draft 1 -->
-                        <div class="paste-draft-section" style="margin-bottom: 30px;">
+                        <div class="paste-draft-section" data-draft-num="1" style="margin-bottom: 30px;">
                             <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
                                 Draft 1 Label:
                             </label>
@@ -1999,7 +1999,7 @@
                         </div>
                         
                         <!-- Draft 2 -->
-                        <div class="paste-draft-section" style="margin-bottom: 30px;">
+                        <div class="paste-draft-section" data-draft-num="2" style="margin-bottom: 30px;">
                             <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
                                 Draft 2 Label:
                             </label>
@@ -2015,24 +2015,16 @@
                                 border-radius: 8px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; line-height: 1.6; 
                                 resize: vertical;"></textarea>
                         </div>
-                        
-                        <!-- Draft 3 (Optional) -->
-                        <div class="paste-draft-section" style="margin-bottom: 30px;">
-                            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
-                                Draft 3 Label <span style="font-weight: 400; color: #666;">(Optional)</span>:
-                            </label>
-                            <input type="text" id="paste-label-3" placeholder="e.g., Draft 3, Final Draft" 
-                                style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; 
-                                font-size: 1rem; margin-bottom: 10px;">
-                            
-                            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
-                                Draft 3 Text <span style="font-weight: 400; color: #666;">(Optional)</span>:
-                            </label>
-                            <textarea id="paste-text-3" placeholder="Paste your third draft here (optional)..." 
-                                style="width: 100%; min-height: 200px; padding: 15px; border: 2px solid var(--border-color); 
-                                border-radius: 8px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; line-height: 1.6; 
-                                resize: vertical;"></textarea>
-                        </div>
+                    </div>
+                    
+                    <!-- Add Draft Button -->
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <button id="addDraftBtn" class="compare-btn" style="background: white; color: var(--primary-color); border: 2px solid var(--primary-color);">
+                            + Add Another Draft
+                        </button>
+                        <p id="draftLimitMessage" style="display: none; margin-top: 10px; color: #666; font-size: 0.9rem;">
+                            Maximum of 5 drafts reached
+                        </p>
                     </div>
                     
                     <button id="comparePastedText" class="compare-btn" style="margin-top: 10px;">
@@ -2560,20 +2552,23 @@ async function comparePastedText() {
     // Show spinner
     document.getElementById('loadingSpinner').style.display = 'flex';
     
-    // Collect pasted drafts
+    // Collect pasted drafts - check all possible fields dynamically
     const drafts = [];
     
-    for (let i = 1; i <= 3; i++) {
-        const label = document.getElementById(`paste-label-${i}`).value.trim();
-        const text = document.getElementById(`paste-text-${i}`).value.trim();
+    // Get all paste draft sections
+    const sections = document.querySelectorAll('.paste-draft-section');
+    sections.forEach(section => {
+        const draftNum = section.getAttribute('data-draft-num');
+        const label = document.getElementById(`paste-label-${draftNum}`).value.trim();
+        const text = document.getElementById(`paste-text-${draftNum}`).value.trim();
         
         if (text) {
             drafts.push({
-                version: label || `Draft ${i}`,
+                version: label || `Draft ${draftNum}`,
                 text: text
             });
         }
-    }
+    });
     
     // Validate
     if (drafts.length < 2) {
@@ -2617,8 +2612,6 @@ async function comparePastedText() {
         showError('Error comparing pasted text: ' + error.message);
     }
 }
-
-
 
 async function readFileContent(file) {
     return new Promise((resolve, reject) => {
@@ -2956,59 +2949,74 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
     }
 }
 
-        function setupNewComparisonButton() {
+function setupNewComparisonButton() {
     const headerNewComparisonBtn = document.getElementById('headerNewComparisonBtn');
     if (headerNewComparisonBtn) {
-        // Show the button in header
         headerNewComparisonBtn.classList.remove('hidden');
-        
-        // Remove any existing event listeners to avoid duplicates
         headerNewComparisonBtn.replaceWith(headerNewComparisonBtn.cloneNode(true));
         
-        // Get the fresh button reference and add event listener
         const freshBtn = document.getElementById('headerNewComparisonBtn');
         freshBtn.addEventListener('click', function() {
-            // Hide the button
             freshBtn.classList.add('hidden');
             
-            // Show upload section
             const uploadSection = document.querySelector('.upload-section');
             if (uploadSection) uploadSection.classList.remove('hidden');
             
-            // Hide comparison results
             const comparisonResults = document.getElementById('comparisonResults');
             if (comparisonResults) comparisonResults.style.display = 'none';
             
-            // Clear uploaded files if any
+            // Clear file inputs
             const file1Input = document.getElementById('file1');
             const file2Input = document.getElementById('file2');
             if (file1Input) file1Input.value = '';
             if (file2Input) file2Input.value = '';
             
-            // Clear any uploaded files array
             if (typeof uploadedFiles !== 'undefined') {
                 uploadedFiles = [];
             }
             
-            // Reset any file lists
             const fileList = document.getElementById('fileList');
             const compareBtn = document.getElementById('compareFiles');
             if (fileList) fileList.style.display = 'none';
             if (compareBtn) compareBtn.style.display = 'none';
             
-            // Clear error messages
+            // Clear pasted text fields and reset to 2 drafts
+            const pasteContainer = document.getElementById('pasteContainer');
+            if (pasteContainer) {
+                // Remove all sections except first 2
+                const allSections = pasteContainer.querySelectorAll('.paste-draft-section');
+                allSections.forEach((section, index) => {
+                    if (index >= 2) {
+                        section.remove();
+                    } else {
+                        // Clear the first 2
+                        const draftNum = section.getAttribute('data-draft-num');
+                        const labelInput = document.getElementById(`paste-label-${draftNum}`);
+                        const textArea = document.getElementById(`paste-text-${draftNum}`);
+                        if (labelInput) labelInput.value = '';
+                        if (textArea) textArea.value = '';
+                    }
+                });
+                
+                // Reset draft count
+                currentDraftCount = 2;
+                const addDraftBtn = document.getElementById('addDraftBtn');
+                const limitMsg = document.getElementById('draftLimitMessage');
+                if (addDraftBtn) addDraftBtn.style.display = 'inline-block';
+                if (limitMsg) limitMsg.style.display = 'none';
+            }
+            
             const errorMessage = document.getElementById('errorMessage');
             if (errorMessage) errorMessage.style.display = 'none';
             
-            // Reset current essay
             currentEssay = null;
             
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 }
-        
+
+
         function updateSliderPosition() {
             const translateX = -100 * currentPosition;
             document.getElementById('comparisonSlider').style.transform = `translateX(${translateX}%)`;
@@ -3322,8 +3330,6 @@ if (restartLandingTourBtn) {
         }
     });
 
-  
-    
     
     // Toggle between table and detail view for revision report
     const tableViewBtn = document.getElementById('tableViewBtn');
@@ -3484,6 +3490,82 @@ function showCompleteTransformation() {
     // Save state
     saveState();
 }
+
+
+// Add Draft Button functionality
+let currentDraftCount = 2; // Start with 2 drafts
+const maxDrafts = 5;
+
+const addDraftBtn = document.getElementById('addDraftBtn');
+if (addDraftBtn) {
+    addDraftBtn.addEventListener('click', function() {
+        if (currentDraftCount >= maxDrafts) {
+            return;
+        }
+        
+        currentDraftCount++;
+        const container = document.getElementById('pasteContainer');
+        
+        // Create new draft section
+        const newDraftSection = document.createElement('div');
+        newDraftSection.className = 'paste-draft-section';
+        newDraftSection.setAttribute('data-draft-num', currentDraftCount);
+        newDraftSection.style.marginBottom = '30px';
+        
+        newDraftSection.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-weight: 600; color: var(--primary-dark); margin: 0;">
+                    Draft ${currentDraftCount} Label:
+                </label>
+                <button class="remove-draft-btn" onclick="removeDraft(${currentDraftCount})" 
+                    style="background: #dc3545; color: white; border: none; border-radius: 50%; 
+                    width: 28px; height: 28px; cursor: pointer; font-size: 1.1rem; line-height: 1; 
+                    transition: var(--transition-standard);"
+                    onmouseover="this.style.transform='scale(1.1)'" 
+                    onmouseout="this.style.transform='scale(1)'">×</button>
+            </div>
+            <input type="text" id="paste-label-${currentDraftCount}" 
+                placeholder="e.g., Draft ${currentDraftCount}, Final Draft" 
+                style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; 
+                font-size: 1rem; margin-bottom: 10px;">
+            
+            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
+                Draft ${currentDraftCount} Text:
+            </label>
+            <textarea id="paste-text-${currentDraftCount}" 
+                placeholder="Paste your draft here..." 
+                style="width: 100%; min-height: 200px; padding: 15px; border: 2px solid var(--border-color); 
+                border-radius: 8px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; line-height: 1.6; 
+                resize: vertical;"></textarea>
+        `;
+        
+        container.appendChild(newDraftSection);
+        
+        // Update button state
+        if (currentDraftCount >= maxDrafts) {
+            addDraftBtn.style.display = 'none';
+            document.getElementById('draftLimitMessage').style.display = 'block';
+        }
+        
+        // Scroll to new field
+        newDraftSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}
+
+// Remove draft function (global scope)
+window.removeDraft = function(draftNum) {
+    const section = document.querySelector(`.paste-draft-section[data-draft-num="${draftNum}"]`);
+    if (section) {
+        section.remove();
+        currentDraftCount--;
+        
+        // Show add button again if we're under max
+        if (currentDraftCount < maxDrafts) {
+            document.getElementById('addDraftBtn').style.display = 'inline-block';
+            document.getElementById('draftLimitMessage').style.display = 'none';
+        }
+    }
+};
 
 const observer = new MutationObserver(() => {
     if (document.getElementById('comparisonResults').style.display !== 'none') {
