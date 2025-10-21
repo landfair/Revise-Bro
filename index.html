@@ -1629,11 +1629,12 @@
 }
 
 .header-title.quote-mode .quote-author {
-  font-size: 0.85rem;
-  font-style: normal;
-  font-weight: 600;
-  color: var(--accent-light);
-  margin-top: 6px;
+    font-size: 0.85rem;
+    font-style: normal;
+    font-weight: 600;
+    color: var(--accent-light);
+    margin-top: 8px;
+    display: block; /* Ensures it's always on its own line */
 }
 
 /* Optional: make fizzle stronger for visibility in smaller text */
@@ -2155,6 +2156,22 @@
     </div>
 </div>
 
+<!-- Quotes Easter Egg Modal -->
+<div id="quotesModal" class="modal">
+    <div class="modal-content" style="max-width: 900px; max-height: 85vh; overflow-y: auto;">
+        <span class="modal-close" id="quotesModalClose">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 10px; text-align: center;">
+            💜 All Revision Quotes 💜
+        </h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px; font-style: italic;">
+            You found the secret! Here are all the quotes about revision from famous writers.
+        </p>
+        <div id="quotesListContainer">
+            <!-- Quotes will be populated here -->
+        </div>
+    </div>
+</div>
+
 <!-- Hidden printable content area -->
 <div id="printableContent" style="display: none;"></div>
 
@@ -2261,8 +2278,8 @@ function cycleDisplay() {
             const quote = quotes[randomIndex];
             titleContainer.classList.add('quote-mode');
             titleEl.innerHTML = `
-                ${quote.text}
-                <span class="quote-author">— ${quote.author}</span>
+                <span style="display: block; margin-bottom: 8px;">${quote.text}</span>
+                <span class="quote-author">${quote.author}</span>
             `;
             showingTitle = false;
             nextDelay = 10000; // Show quote for 10 seconds
@@ -3089,6 +3106,23 @@ const optionsDropdownBtn = document.getElementById('optionsDropdownBtn');
         });
     }
 
+    // Quotes Modal functionality
+const quotesModal = document.getElementById('quotesModal');
+const quotesModalClose = document.getElementById('quotesModalClose');
+
+if (quotesModalClose) {
+    quotesModalClose.addEventListener('click', function() {
+        quotesModal.style.display = 'none';
+    });
+}
+
+// Close quotes modal when clicking outside
+window.addEventListener('click', function(event) {
+    if (event.target === quotesModal) {
+        quotesModal.style.display = 'none';
+    }
+});
+
     // Tab switching
     document.getElementById('uploadTab').addEventListener('click', function() {
         switchTab('uploadTab', 'uploadContent');
@@ -3864,6 +3898,69 @@ function showAnnotationPopup(element, annotationId, existingNote = '') {
         });
     }, 100);
 }
+
+// Konami Code Easter Egg
+(function() {
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight'];
+    let konamiIndex = 0;
+    
+    document.addEventListener('keydown', function(e) {
+        // Check if the key matches the next key in the sequence
+        if (e.key === konamiCode[konamiIndex]) {
+            konamiIndex++;
+            
+            // If we've completed the sequence
+            if (konamiIndex === konamiCode.length) {
+                showAllQuotes();
+                konamiIndex = 0; // Reset for next time
+            }
+        } else {
+            // Wrong key, reset the sequence
+            konamiIndex = 0;
+        }
+    });
+    
+    function showAllQuotes() {
+        const modal = document.getElementById('quotesModal');
+        const container = document.getElementById('quotesListContainer');
+        
+        // Build the quotes list
+        let html = '';
+        quotes.forEach((quote, index) => {
+            html += `
+                <div style="
+                    background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};
+                    padding: 20px;
+                    margin-bottom: 15px;
+                    border-radius: 8px;
+                    border-left: 4px solid var(--primary-color);
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                ">
+                    <p style="
+                        font-size: 1.05rem;
+                        line-height: 1.6;
+                        color: var(--text-color);
+                        margin: 0 0 10px 0;
+                        font-style: italic;
+                    ">"${quote.text}"</p>
+                    <p style="
+                        text-align: right;
+                        color: var(--accent-light);
+                        font-weight: 600;
+                        font-size: 0.95rem;
+                        margin: 0;
+                    ">— ${quote.author}</p>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        modal.style.display = 'block';
+        
+        // Optional: Play a little celebration
+        console.log('🎮 Konami Code Activated! 🎮');
+    }
+})();
 
 // Make diff elements annotatable
 function makeAnnotatable(essayTitle, fromDraft, toDraft) {
