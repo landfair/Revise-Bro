@@ -94,24 +94,7 @@
             display: none !important;
         }
         
-        .generate-report-btn {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-standard);
-            margin: 15px;
-            box-shadow: 0 3px 10px rgba(87, 6, 140, 0.2);
-        }
-        
-        .generate-report-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(87, 6, 140, 0.3);
-        }
+       
         
         .modal {
             display: none;
@@ -1185,25 +1168,7 @@
     color: #333;
 }
 
-.view-annotations-btn {
-    background: white;
-    color: var(--primary-color);
-    border: 2px solid var(--primary-color);
-    border-radius: 25px;
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition-standard);
-    margin: 15px;
-    box-shadow: 0 3px 10px rgba(87, 6, 140, 0.2);
-}
 
-.view-annotations-btn:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-2px);
-}
 
 /* Data Management Styles */
 .data-manager {
@@ -1314,8 +1279,7 @@
     background: #f1f8e9;
 }
 
-/* PDF/Print Styles */
-.export-pdf-btn {
+.generate-report-btn, .view-annotations-btn, .export-pdf-btn {
     background: var(--primary-gradient);
     color: white;
     border: none;
@@ -1325,14 +1289,15 @@
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition-standard);
-    margin: 15px;
     box-shadow: 0 3px 10px rgba(87, 6, 140, 0.2);
 }
 
-.export-pdf-btn:hover {
+.generate-report-btn:hover, .view-annotations-btn:hover, .export-pdf-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(87, 6, 140, 0.3);
 }
+
+
 
 
 @media print {
@@ -1966,6 +1931,7 @@
             
             <div class="tab-container">
                 <button class="tab-btn active" id="uploadTab">Upload Files</button>
+                <button class="tab-btn" id="pasteTab">Paste Text</button>
                 <button class="tab-btn" id="examplesTab"><i>Mercer Street</i></button>
             </div>
             
@@ -1989,6 +1955,78 @@
                 </div>
             </div>
             
+            <div id="pasteContent" class="tab-content">
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <h3 style="color: var(--primary-dark); margin-bottom: 15px;">Paste Your Drafts</h3>
+                    <p style="margin-bottom: 25px; line-height: 1.6; color: var(--text-color);">
+                        Copy and paste your drafts below. Label each draft (e.g., "Draft 1", "First Draft", "Final") and paste the full text. You can compare 2-4 drafts.
+                    </p>
+                    
+                    <div id="pasteContainer">
+                        <!-- Draft 1 -->
+                        <div class="paste-draft-section" style="margin-bottom: 30px;">
+                            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
+                                Draft 1 Label:
+                            </label>
+                            <input type="text" id="paste-label-1" placeholder="e.g., Draft 1, First Draft" 
+                                style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; 
+                                font-size: 1rem; margin-bottom: 10px;">
+                            
+                            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
+                                Draft 1 Text:
+                            </label>
+                            <textarea id="paste-text-1" placeholder="Paste your first draft here..." 
+                                style="width: 100%; min-height: 200px; padding: 15px; border: 2px solid var(--border-color); 
+                                border-radius: 8px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; line-height: 1.6; 
+                                resize: vertical;"></textarea>
+                        </div>
+                        
+                        <!-- Draft 2 -->
+                        <div class="paste-draft-section" style="margin-bottom: 30px;">
+                            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
+                                Draft 2 Label:
+                            </label>
+                            <input type="text" id="paste-label-2" placeholder="e.g., Draft 2, Revised Draft" 
+                                style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; 
+                                font-size: 1rem; margin-bottom: 10px;">
+                            
+                            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
+                                Draft 2 Text:
+                            </label>
+                            <textarea id="paste-text-2" placeholder="Paste your second draft here..." 
+                                style="width: 100%; min-height: 200px; padding: 15px; border: 2px solid var(--border-color); 
+                                border-radius: 8px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; line-height: 1.6; 
+                                resize: vertical;"></textarea>
+                        </div>
+                        
+                        <!-- Draft 3 (Optional) -->
+                        <div class="paste-draft-section" style="margin-bottom: 30px;">
+                            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
+                                Draft 3 Label <span style="font-weight: 400; color: #666;">(Optional)</span>:
+                            </label>
+                            <input type="text" id="paste-label-3" placeholder="e.g., Draft 3, Final Draft" 
+                                style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; 
+                                font-size: 1rem; margin-bottom: 10px;">
+                            
+                            <label style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
+                                Draft 3 Text <span style="font-weight: 400; color: #666;">(Optional)</span>:
+                            </label>
+                            <textarea id="paste-text-3" placeholder="Paste your third draft here (optional)..." 
+                                style="width: 100%; min-height: 200px; padding: 15px; border: 2px solid var(--border-color); 
+                                border-radius: 8px; font-family: 'Segoe UI', sans-serif; font-size: 1rem; line-height: 1.6; 
+                                resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                    
+                    <button id="comparePastedText" class="compare-btn" style="margin-top: 10px;">
+                        Compare Drafts
+                    </button>
+                </div>
+            </div>
+
+
+
+
             <div id="examplesContent" class="tab-content">
                 <div style="margin: 0 0 90px 0;">
                     <h3 style="color: var(--primary-dark); margin-bottom: 15px; font-size: 1.3rem;">Example Essays from <i>Mercer Street</i></h3>
@@ -2045,7 +2083,14 @@
                     <!-- Panels will be dynamically generated -->
                 </div>
             </div>
+            
+            <!-- Button Container -->
+            <div id="comparisonButtonsContainer" style="display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                <!-- Buttons will be added here dynamically -->
+            </div>
         </div>
+
+
         <div id="revisionReportModal" class="modal">
             <div class="modal-content" style="max-width: 900px;">
                 <span class="modal-close" id="reportModalClose">&times;</span>
@@ -2476,7 +2521,73 @@ async function compareUploadedFiles() {
         // Save state after successful comparison
         saveState();
 }
-    async function readFileContent(file) {
+    
+
+async function comparePastedText() {
+    // Show spinner
+    document.getElementById('loadingSpinner').style.display = 'flex';
+    
+    // Collect pasted drafts
+    const drafts = [];
+    
+    for (let i = 1; i <= 3; i++) {
+        const label = document.getElementById(`paste-label-${i}`).value.trim();
+        const text = document.getElementById(`paste-text-${i}`).value.trim();
+        
+        if (text) {
+            drafts.push({
+                version: label || `Draft ${i}`,
+                text: text
+            });
+        }
+    }
+    
+    // Validate
+    if (drafts.length < 2) {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        showError('Please paste at least 2 drafts to compare.');
+        return;
+    }
+    
+    try {
+        const pastedEssay = {
+            title: "Pasted Text Comparison",
+            author: "User Input",
+            description: "Comparison of pasted text drafts",
+            drafts: drafts
+        };
+        
+        currentEssay = pastedEssay;
+        const panelInfo = createPanels(pastedEssay);
+        totalPanels = panelInfo.length;
+        currentPosition = 0;
+        
+        // Hide upload section
+        const uploadSection = document.querySelector('.upload-section');
+        if (uploadSection) uploadSection.classList.add('hidden');
+        
+        const comparisonResults = document.getElementById('comparisonResults');
+        comparisonResults.style.display = 'block';
+        updateSliderPosition();
+        updateNavigationInfo(panelInfo);
+        
+        setupNewComparisonButton();
+        
+        // Hide spinner
+        document.getElementById('loadingSpinner').style.display = 'none';
+        
+        // Save state
+        saveState();
+        
+    } catch (error) {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        showError('Error comparing pasted text: ' + error.message);
+    }
+}
+
+
+
+async function readFileContent(file) {
     return new Promise((resolve, reject) => {
         if (file.name.endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
             // Handle .docx files with mammoth
@@ -2788,16 +2899,29 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
         }
         
         function updateNavigationInfo(panelInfo) {
-            const navInfo = document.getElementById('navigationInfo');
-            if (navInfo && panelInfo[currentPosition]) {
-                const panel = panelInfo[currentPosition];
-                if (panel.type === 'draft') {
-                    navInfo.textContent = currentEssay.drafts[panel.index].version;
-                } else if (panel.type === 'diff') {
-                    navInfo.textContent = `Changes: ${currentEssay.drafts[panel.fromIndex].version} → ${currentEssay.drafts[panel.toIndex].version}`;
-                }
+    const navInfo = document.getElementById('navigationInfo');
+    if (navInfo) {
+        // Check if current panel is the complete transformation panel
+        const currentPanel = document.querySelector('.comparison-slider').children[currentPosition];
+        if (currentPanel) {
+            const heading = currentPanel.querySelector('h3');
+            if (heading && heading.textContent.includes('Complete Transformation')) {
+                navInfo.textContent = heading.textContent.replace('📊 ', '');
+                return;
             }
         }
+        
+        // Otherwise use standard logic
+        if (panelInfo[currentPosition]) {
+            const panel = panelInfo[currentPosition];
+            if (panel.type === 'draft') {
+                navInfo.textContent = currentEssay.drafts[panel.index].version;
+            } else if (panel.type === 'diff') {
+                navInfo.textContent = `Changes: ${currentEssay.drafts[panel.fromIndex].version} → ${currentEssay.drafts[panel.toIndex].version}`;
+            }
+        }
+    }
+}
 
         function setupNewComparisonButton() {
     const headerNewComparisonBtn = document.getElementById('headerNewComparisonBtn');
@@ -2974,6 +3098,10 @@ const optionsDropdownBtn = document.getElementById('optionsDropdownBtn');
         switchTab('examplesTab', 'examplesContent');
     });
 
+    document.getElementById('pasteTab').addEventListener('click', function() {
+    switchTab('pasteTab', 'pasteContent');
+    });
+
     // About modal functionality
     const aboutButton = document.getElementById('aboutButton');
     const aboutModal = document.getElementById('aboutModal');
@@ -2991,6 +3119,12 @@ const optionsDropdownBtn = document.getElementById('optionsDropdownBtn');
     const fileInput = document.getElementById('fileInput');
     const fileInputContainer = document.querySelector('.file-input-container');
     const compareFilesBtn = document.getElementById('compareFiles');
+
+    // Pasted text comparison button
+        const comparePastedBtn = document.getElementById('comparePastedText');
+        if (comparePastedBtn) {
+            comparePastedBtn.addEventListener('click', comparePastedText);
+        }
 
     fileInput.addEventListener('change', function(e) {
         handleFileUpload(e.target.files);
@@ -3173,51 +3307,140 @@ if (restartLandingTourBtn) {
         });
     }
     
-    // Add generate report button to the diff panels
-    const addReportButton = () => {
-        const comparisonResults = document.getElementById('comparisonResults');
-        if (comparisonResults && !document.getElementById('generateReportBtn')) {
-            const btn = document.createElement('button');
-            btn.id = 'generateReportBtn';
-            btn.className = 'generate-report-btn';
-            btn.textContent = 'Generate Revision Report';
-            btn.onclick = generateRevisionReport;
-            comparisonResults.appendChild(btn);
-        }
-    };
+const addReportButton = () => {
+    const container = document.getElementById('comparisonButtonsContainer');
+    if (container && !document.getElementById('generateReportBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'generateReportBtn';
+        btn.className = 'generate-report-btn';
+        btn.textContent = 'Generate Revision Report';
+        btn.onclick = generateRevisionReport;
+        container.appendChild(btn);
+    }
+};
     
-// Add view annotations button
+    
 const addAnnotationsButton = () => {
-    const comparisonResults = document.getElementById('comparisonResults');
-    if (comparisonResults && !document.getElementById('viewAnnotationsBtn')) {
+    const container = document.getElementById('comparisonButtonsContainer');
+    if (container && !document.getElementById('viewAnnotationsBtn')) {
         const btn = document.createElement('button');
         btn.id = 'viewAnnotationsBtn';
         btn.className = 'view-annotations-btn';
         btn.textContent = 'View Annotations';
         btn.onclick = displayAnnotations;
-        comparisonResults.appendChild(btn);
+        container.appendChild(btn);
     }
 };
 
-// ADD THIS NEW FUNCTION HERE:
 const addPdfExportButton = () => {
-    const comparisonResults = document.getElementById('comparisonResults');
-    if (comparisonResults && !document.getElementById('exportPdfBtn')) {
+    const container = document.getElementById('comparisonButtonsContainer');
+    if (container && !document.getElementById('exportPdfBtn')) {
         const btn = document.createElement('button');
         btn.id = 'exportPdfBtn';
         btn.className = 'export-pdf-btn';
         btn.textContent = '📄 Export as PDF';
         btn.onclick = showPdfOptions;
-        comparisonResults.appendChild(btn);
+        container.appendChild(btn);
     }
 };
 
-// Check periodically if comparison results are shown
+const addCompleteTransformationButton = () => {
+    const container = document.getElementById('comparisonButtonsContainer');
+    if (container && !document.getElementById('completeTransformationBtn')) {
+        // Only show if there are 3+ drafts
+        if (currentEssay && currentEssay.drafts && currentEssay.drafts.length >= 3) {
+            const btn = document.createElement('button');
+            btn.id = 'completeTransformationBtn';
+            btn.className = 'generate-report-btn';
+            btn.textContent = 'Compare First and Final Drafts';
+            btn.onclick = showCompleteTransformation;
+            container.appendChild(btn);
+        }
+    }
+};
+
+
+function showCompleteTransformation() {
+    if (!currentEssay || currentEssay.drafts.length < 2) {
+        alert('Not enough drafts to compare.');
+        return;
+    }
+    
+    const firstDraft = currentEssay.drafts[0];
+    const finalDraft = currentEssay.drafts[currentEssay.drafts.length - 1];
+    
+    // Check if panel already exists
+    const slider = document.getElementById('comparisonSlider');
+    let existingPanelIndex = -1;
+    
+    Array.from(slider.children).forEach((panel, index) => {
+        const heading = panel.querySelector('h3');
+        if (heading && heading.textContent.includes('Complete Transformation') &&
+            heading.textContent.includes(firstDraft.version) && 
+            heading.textContent.includes(finalDraft.version)) {
+            existingPanelIndex = index;
+        }
+    });
+    
+    // If panel exists, jump to it
+    if (existingPanelIndex !== -1) {
+        currentPosition = existingPanelIndex;
+        updateSliderPosition();
+        return;
+    }
+    
+    // Create new panel
+    const transformationPanel = document.createElement('div');
+    transformationPanel.className = 'panel diff-panel';
+    
+    const formattedText1 = formatText(firstDraft.text);
+    const formattedText2 = formatText(finalDraft.text);
+    const diffContent = generateAdvancedDiff(formattedText1, formattedText2);
+    
+    transformationPanel.innerHTML = `
+    <div style="background: var(--accent-lighter); 
+                    padding: 15px; margin: -30px -25px 20px -25px; border-radius: 0;">
+                    <h3 style="margin: 0; color: var(--primary-dark);">
+                📊 Complete Transformation: ${firstDraft.version} → ${finalDraft.version}
+            </h3>
+            <p style="margin: 5px 0 0 0; color: var(--primary-color); font-size: 0.95rem;">
+                This view shows all changes from your first draft to your final draft.
+            </p>
+        </div>
+        <div class="diff-legend">
+            <span class="legend-item"><span class="deletion word-level">Deleted</span></span>
+            <span class="legend-item"><span class="addition word-level">Added</span></span>
+        </div>
+        <div class="panel-content">${diffContent}</div>
+    `;
+    
+    // Add to end of slider
+    slider.appendChild(transformationPanel);
+    totalPanels++;
+    
+    // Jump to new panel
+    currentPosition = totalPanels - 1;
+    updateSliderPosition();
+    
+    // Enable annotations after a short delay
+    setTimeout(() => {
+        makeAnnotatable(
+            currentEssay.title,
+            firstDraft.version,
+            finalDraft.version
+        );
+    }, 100);
+    
+    // Save state
+    saveState();
+}
+
 const observer = new MutationObserver(() => {
     if (document.getElementById('comparisonResults').style.display !== 'none') {
         addReportButton();
         addAnnotationsButton();
-        addPdfExportButton();  // <-- Make sure this line is here!
+        addPdfExportButton();
+        addCompleteTransformationButton(); // ADD THIS LINE
     }
 });
 
@@ -4839,8 +5062,8 @@ class LandingPageTutorial {
                 showSkip: true
             },
             {
-                title: "Getting Started: Upload Your Drafts",
-                content: "Click here or drag and drop multiple drafts of the same document. The tool works best with two to four versions showing your revision progression.",
+                title: "Getting Started: Add Your Drafts",
+                content: "Upload files by clicking here or dragging and dropping. Or use the 'Paste Text' tab to simply copy and paste your drafts directly.",
                 target: ".file-input-container",
                 position: "below",
                 showNext: true,
