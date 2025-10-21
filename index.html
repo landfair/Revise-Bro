@@ -254,12 +254,6 @@
             display: inline-block;
             box-shadow: none;
         }
-
-        .subtitle {
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
         
         .tab-btn:hover {
             color: var(--primary-color);
@@ -1967,25 +1961,76 @@
     <div class="container">
         
         
-        <div class="upload-section" id="uploadSection">
-            <h2>Compare Your Drafts</h2>
-            <p class="subtitle">Upload 2-4 versions of your document to visualize your revision process</p>
+        <div class="upload-section">
+            <h2>Compare Drafts</h2>
             
-            <div class="file-input-container" id="fileInputContainer">
-                <div class="upload-icon">📄</div>
-                <p><strong>Drag and drop files here</strong></p>
-                <p style="color: #666; font-size: 0.9em; margin: 10px 0;">
-                    Supported formats: .txt, .docx<br>
-                    <em>All processing happens locally in your browser - files are never uploaded to a server</em>
-                </p>
-                <input type="file" id="fileInput" multiple accept=".txt,.docx" style="display: none;">
-                <button class="browse-btn" id="browseBtn">Browse Files</button>
+            <div class="tab-container">
+                <button class="tab-btn active" id="uploadTab">Upload Files</button>
+                <button class="tab-btn" id="examplesTab"><i>Mercer Street</i></button>
             </div>
             
-            <!-- Privacy notice -->
-            <div style="max-width: 600px; margin: 20px auto; padding: 15px; background: #f0f7ff; border-left: 4px solid #2196F3; border-radius: 4px;">
-                <strong>🔒 Your Privacy:</strong> All document processing happens locally in your browser. 
-                Your files never leave your device.
+            <div id="uploadContent" class="tab-content active">
+                <div class="upload-area">
+                    <div class="file-input-container">
+                        <label for="fileInput" class="file-input-label">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">
+                                <strong>Choose files to compare</strong>
+                                <p>Select multiple text files (.txt, .docx) or drag and drop them here</p>
+                            </div>
+                        </label>
+                        <input type="file" id="fileInput" multiple accept=".txt,.docx,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;">                    </div>
+        <div style="margin: 20px 0; text-align: center;">
+           
+        </div>
+                    
+                        <div id="fileList" class="file-list" style="display: none;"></div>
+                    <button id="compareFiles" class="compare-btn" style="display: none;">Compare Files</button>
+                </div>
+            </div>
+            
+            <div id="examplesContent" class="tab-content">
+                <div style="margin: 0 0 90px 0;">
+                    <h3 style="color: var(--primary-dark); margin-bottom: 15px; font-size: 1.3rem;">Example Essays from <i>Mercer Street</i></h3>
+                    <p style="margin-bottom: 12px; line-height: 1.6; color: var(--text-color);">
+                        <i>Mercer Street</i> is the annual anthology of essays composed by students in the Expository Writing Program at New York University. Each year, approximately twenty essays are selected from hundreds of submissions, representing the rigorous and thoughtful work accomplished in our courses.
+                    </p>
+                    <p style="margin-bottom: 20px; line-height: 1.6; color: var(--text-color);">
+                        The drafts below offer a window into the writing processes of exceptional undergraduate writers. Draft by draft, you can see how these students developed and refined their ideas iteratively, moving from early explorations to polished final arguments. These examples demonstrate the transformative power of sustained revision.
+                    </p>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <a href="https://wp.nyu.edu/mercerstreet/" target="_blank" rel="noopener noreferrer" style="
+                            display: inline-block;
+                            background: var(--primary-gradient);
+                            color: white;
+                            border: none;
+                            border-radius: 25px;
+                            padding: 12px 28px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            text-decoration: none;
+                            transition: var(--transition-standard);
+                            box-shadow: 0 3px 10px rgba(87, 6, 140, 0.2);
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(87, 6, 140, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 3px 10px rgba(87, 6, 140, 0.2)'">
+                            Visit Mercer Street
+                        </a>
+                    </div>
+                </div>
+                <div class="examples-grid">
+                    <div class="example-card" data-essay="essay1">
+                        <h4>Ping! Panic! Repeat!</h4>
+                        <p class="example-author">By Braden Ou</p>
+                        <p class="example-description">An ethnographic study exploring smartphone use.</p>
+                        <button class="example-btn">View All Drafts</button>
+                    </div>
+
+                    <div class="example-card" data-essay="essay2">
+                        <h4><i>An excerpt from </i>Simulated Systems and the Limits of Intuitive Learning</h4>
+                        <p class="example-author">By Srinivas Harish</p>
+                        <p class="example-description">Examining the affordance and limitations of gamified learning.</p>
+                        <button class="example-btn">View All Drafts</button>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -2870,10 +2915,8 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
             document.getElementById(activeContentId).classList.add('active');
         }
         
-        // Wait for DOM to be loaded
-        // Wait for DOM to be loaded
-
-
+    
+       
 
 // Initialize on page load
 window.addEventListener('load', () => {
@@ -2891,7 +2934,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show restore banner if there's saved data
     showRestoreBanner();
     
- 
+    
 
     // Clear data button
     const clearDataButton = document.getElementById('clearDataButton');
@@ -4803,7 +4846,7 @@ class LandingPageTutorial {
                 showNext: true,
                 showSkip: true
             },
-        
+          
             {
                 title: "Explore Example Essays",
                 content: "Not ready to upload your own work? The Example Essays tab features real student revision processes from NYU's Mercer Street journal. You can see how exceptional undergraduate writers developed their ideas through multiple drafts.",
