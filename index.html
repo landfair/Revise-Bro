@@ -800,6 +800,7 @@
         }
         
         .navigation-info {
+            display: none; /* Hidden per user request */
             position: absolute;
             top: 20px;
             right: 20px;
@@ -1490,38 +1491,114 @@
 
 
 
+/* Tooltip Help Button Styles */
+.help-tooltip-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: help;
+    margin-left: 8px;
+    vertical-align: middle;
+    position: relative;
+    transition: background-color var(--transition-base);
+}
+
+.help-tooltip-btn:hover {
+    background: var(--primary-dark);
+}
+
+.help-tooltip-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 10px;
+    padding: 15px;
+    background: var(--card-background);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    width: 320px;
+    z-index: 10000;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.help-tooltip-content::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-bottom-color: var(--primary-color);
+}
+
+.help-tooltip-btn:hover .help-tooltip-content,
+.help-tooltip-btn:focus .help-tooltip-content {
+    display: block;
+}
+
+.help-tooltip-content strong {
+    color: var(--primary-dark);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.help-tooltip-content ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.help-tooltip-content li {
+    margin: 4px 0;
+}
+
 /* Feedback Button Styles */
 .feedback-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 44px;
-    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: var(--primary-gradient);
     color: white;
     border: none;
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     box-shadow: var(--shadow-md);
     transition: all var(--transition-base);
-    z-index: 10;
+    margin-left: 12px;
+    vertical-align: middle;
 }
 
 .feedback-button:hover {
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-2px) scale(1.05);
     box-shadow: var(--shadow-lg);
 }
 
 .feedback-button:active {
-    transform: translateY(-1px) scale(1.02);
+    transform: translateY(0) scale(1.02);
 }
 
 .feedback-button.has-feedback {
-    font-size: 26px;
+    font-size: 22px;
+}
+
+.panel h3 {
+    display: flex;
+    align-items: center;
 }
 
 .feedback-modal-content {
@@ -2591,28 +2668,11 @@
                 <div style="margin: 0 0 90px 0;">
                     <h3 style="color: var(--primary-dark); margin-bottom: 15px; font-size: 1.3rem;">Example Essays from <i>Mercer Street</i></h3>
                     <p style="margin-bottom: 12px; line-height: 1.6; color: var(--text-color);">
-                        <i>Mercer Street</i> is the annual anthology of essays composed by students in the Expository Writing Program at New York University. Each year, approximately twenty essays are selected from hundreds of submissions, representing the rigorous and thoughtful work accomplished in our courses.
+                        <i><a href="https://wp.nyu.edu/mercerstreet/" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; font-style: italic;">Mercer Street</a></i> is the annual anthology of essays composed by students in the Expository Writing Program at New York University. Each year, approximately twenty essays are selected from hundreds of submissions, representing the rigorous and thoughtful work accomplished in our courses.
                     </p>
-                    <p style="margin-bottom: 20px; line-height: 1.6; color: var(--text-color);">
+                    <p style="margin-bottom: 30px; line-height: 1.6; color: var(--text-color);">
                         The drafts below offer a window into the writing processes of exceptional undergraduate writers. Draft by draft, you can see how these students developed and refined their ideas iteratively, moving from early explorations to polished final arguments. These examples demonstrate the transformative power of sustained revision.
                     </p>
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <a href="https://wp.nyu.edu/mercerstreet/" target="_blank" rel="noopener noreferrer" style="
-                            display: inline-block;
-                            background: var(--primary-gradient);
-                            color: white;
-                            border: none;
-                            border-radius: 25px;
-                            padding: 12px 28px;
-                            font-size: 1rem;
-                            font-weight: 600;
-                            text-decoration: none;
-                            transition: var(--transition-standard);
-                            box-shadow: 0 3px 10px rgba(87, 6, 140, 0.2);
-                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(87, 6, 140, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 3px 10px rgba(87, 6, 140, 0.2)'">
-                            Visit Mercer Street
-                        </a>
-                    </div>
                 </div>
                 <div class="examples-grid">
                     <div class="example-card" data-essay="essay1">
@@ -2744,14 +2804,32 @@
 <div id="saveProjectModal" class="modal">
     <div class="modal-content" style="max-width: 500px;">
         <span class="modal-close" id="saveProjectModalClose">&times;</span>
-        <h2 style="color: var(--primary-dark); margin-bottom: 20px;">Save Project</h2>
+        <h2 style="color: var(--primary-dark); margin-bottom: 20px; display: inline-flex; align-items: center;">
+            Save Project
+            <button class="help-tooltip-btn" tabindex="0">
+                ?
+                <div class="help-tooltip-content">
+                    <strong>Save Project</strong>
+                    <p>Save your current work including:</p>
+                    <ul>
+                        <li>All uploaded draft files</li>
+                        <li>Revision annotations</li>
+                        <li>Instructor/classmate feedback</li>
+                    </ul>
+                    <p>You can save up to 5 projects. Projects can be loaded later or downloaded as .bro files.</p>
+                </div>
+            </button>
+        </h2>
         <p style="margin-bottom: 20px; color: var(--text-secondary);">Give your project a name to save all drafts and annotations.</p>
         <input type="text" id="projectNameInput" placeholder="Enter project name..."
             style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px;
             font-size: 1rem; margin-bottom: 20px;">
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-            <button class="annotation-cancel-btn" id="cancelSaveProjectBtn">Cancel</button>
-            <button class="annotation-save-btn" id="confirmSaveProjectBtn">Save Project</button>
+        <div style="display: flex; gap: 10px; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 15px;">
+            <button class="annotation-cancel-btn" id="manageProjectsFromSaveBtn">Manage Projects</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="annotation-cancel-btn" id="cancelSaveProjectBtn">Cancel</button>
+                <button class="annotation-save-btn" id="confirmSaveProjectBtn">Save Project</button>
+            </div>
         </div>
     </div>
 </div>
@@ -2760,7 +2838,22 @@
 <div id="loadProjectModal" class="modal">
     <div class="modal-content" style="max-width: 600px;">
         <span class="modal-close" id="loadProjectModalClose">&times;</span>
-        <h2 style="color: var(--primary-dark); margin-bottom: 20px;">Load Project</h2>
+        <h2 style="color: var(--primary-dark); margin-bottom: 20px; display: inline-flex; align-items: center;">
+            Load Project
+            <button class="help-tooltip-btn" tabindex="0">
+                ?
+                <div class="help-tooltip-content">
+                    <strong>Load Project</strong>
+                    <p>Load a previously saved project to continue working on it.</p>
+                    <ul>
+                        <li>Click any project to load it</li>
+                        <li>All drafts, annotations, and feedback will be restored</li>
+                        <li>Your current work will be replaced</li>
+                    </ul>
+                    <p>Use "Manage Projects" to download projects as .bro files or delete them.</p>
+                </div>
+            </button>
+        </h2>
         <p style="margin-bottom: 20px; color: var(--text-secondary);">Select a saved project to load.</p>
         <div id="projectsList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
             <!-- Projects will be listed here -->
@@ -2775,10 +2868,34 @@
 <div id="manageProjectsModal" class="modal">
     <div class="modal-content" style="max-width: 600px;">
         <span class="modal-close" id="manageProjectsModalClose">&times;</span>
-        <h2 style="color: var(--primary-dark); margin-bottom: 10px;">Manage Projects</h2>
+        <h2 style="color: var(--primary-dark); margin-bottom: 10px; display: inline-flex; align-items: center;">
+            Manage Projects
+            <button class="help-tooltip-btn" tabindex="0">
+                ?
+                <div class="help-tooltip-content">
+                    <strong>Manage Projects</strong>
+                    <p><strong>Upload .bro Files:</strong> Import projects shared by others or backed up previously.</p>
+                    <p><strong>Download:</strong> Export projects as .bro files to share with classmates or create backups.</p>
+                    <p><strong>Delete:</strong> Remove projects you no longer need (maximum 5 projects).</p>
+                    <p>.bro files contain all drafts, annotations, and feedback.</p>
+                </div>
+            </button>
+        </h2>
         <p id="projectCountMessage" style="margin-bottom: 20px; color: var(--text-secondary); font-weight: 600;">
             <!-- Count will be shown here -->
         </p>
+
+        <!-- Upload .bro file section -->
+        <div style="margin-bottom: 20px; padding: 15px; background: var(--accent-purple-lightest); border-radius: var(--radius-md); border: 2px dashed var(--primary-color);">
+            <label for="broFileInput" style="display: block; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">
+                📁 Upload Project File (.bro)
+            </label>
+            <input type="file" id="broFileInput" accept=".bro" style="display: none;">
+            <button class="annotation-save-btn" onclick="document.getElementById('broFileInput').click()" style="width: 100%;">
+                Choose .bro File to Import
+            </button>
+        </div>
+
         <div id="manageProjectsList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
             <!-- Projects will be listed here with delete buttons -->
         </div>
@@ -3458,7 +3575,6 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
                 // Add draft panel
                 const draftPanel = document.createElement('div');
                 draftPanel.className = 'panel';
-                draftPanel.style.position = 'relative'; // For absolute positioning of feedback button
                 const formattedText = formatText(essay.drafts[i].text);
 
                 // Check if feedback exists for this draft
@@ -3468,11 +3584,13 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
                 const feedbackClass = hasFeedback ? 'has-feedback' : '';
 
                 draftPanel.innerHTML = `
-                    <button class="feedback-button ${feedbackClass}"
-                            onclick="showFeedbackModal('${essay.title.replace(/'/g, "\\'")}', '${essay.drafts[i].version.replace(/'/g, "\\'")}')">
-                        ${feedbackIcon}
-                    </button>
-                    <h3>${essay.drafts[i].version}</h3>
+                    <h3>
+                        ${essay.drafts[i].version}
+                        <button class="feedback-button ${feedbackClass}"
+                                onclick="showFeedbackModal('${essay.title.replace(/'/g, "\\'")}', '${essay.drafts[i].version.replace(/'/g, "\\'")}')">
+                            ${feedbackIcon}
+                        </button>
+                    </h3>
                     <div class="panel-content">${formattedText}</div>
                 `;
                 slider.appendChild(draftPanel);
@@ -3784,6 +3902,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Manage Projects button from Save modal
+    const manageProjectsFromSaveBtn = document.getElementById('manageProjectsFromSaveBtn');
+    if (manageProjectsFromSaveBtn) {
+        manageProjectsFromSaveBtn.addEventListener('click', function() {
+            saveProjectModal.style.display = 'none';
+            showManageProjectsModal();
+        });
+    }
+
     // Load Project Modal Events
     const loadProjectModal = document.getElementById('loadProjectModal');
     const loadProjectModalClose = document.getElementById('loadProjectModalClose');
@@ -3824,6 +3951,19 @@ document.addEventListener('DOMContentLoaded', function() {
         backToSaveFromManageBtn.addEventListener('click', function() {
             manageProjectsModal.style.display = 'none';
             showSaveProjectModal();
+        });
+    }
+
+    // .bro File Upload Event
+    const broFileInput = document.getElementById('broFileInput');
+    if (broFileInput) {
+        broFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                importBroFile(file);
+                // Clear the input so the same file can be selected again
+                e.target.value = '';
+            }
         });
     }
 
@@ -4961,6 +5101,7 @@ function refreshManageProjectsList() {
                 <div class="project-item-date">Saved: ${new Date(project.savedDate).toLocaleString()}</div>
             </div>
             <div class="project-item-actions">
+                <button class="project-load-btn" onclick="downloadProjectAsBro('${project.name.replace(/'/g, "\\'")}')">Download</button>
                 <button class="project-delete-btn" onclick="deleteProject('${project.name.replace(/'/g, "\\'")}')">Delete</button>
             </div>
         </div>
@@ -4991,14 +5132,129 @@ function attemptSaveProject() {
     }
 }
 
+// ===== .BRO FILE IMPORT/EXPORT FUNCTIONS =====
+
+function downloadProjectAsBro(projectName) {
+    const projects = getProjects();
+    const project = projects.find(p => p.name === projectName);
+
+    if (!project) {
+        showError('Project not found');
+        return;
+    }
+
+    // Create the .bro file data (JSON format)
+    const broData = {
+        version: "1.0",
+        exportDate: new Date().toISOString(),
+        projectName: project.name,
+        projectData: project
+    };
+
+    // Convert to JSON string
+    const jsonString = JSON.stringify(broData, null, 2);
+
+    // Create a blob and download it
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${projectName}.bro`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showDataStatus(`Project "${projectName}" downloaded as .bro file ✓`);
+}
+
+function importBroFile(file) {
+    if (!file) {
+        showError('No file selected');
+        return;
+    }
+
+    // Validate file extension
+    if (!file.name.endsWith('.bro')) {
+        showError('Invalid file type. Please select a .bro file.');
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        try {
+            const broData = JSON.parse(e.target.result);
+
+            // Validate the .bro file structure
+            if (!broData.version || !broData.projectData) {
+                showError('Invalid .bro file format');
+                return;
+            }
+
+            const projectData = broData.projectData;
+
+            // Check if project already exists
+            const projects = getProjects();
+            const existingProject = projects.find(p => p.name === projectData.name);
+
+            let confirmMessage = existingProject
+                ? `A project named "${projectData.name}" already exists. Do you want to replace it?`
+                : `Import project "${projectData.name}"?`;
+
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            // Update or add the project
+            if (existingProject) {
+                const index = projects.findIndex(p => p.name === projectData.name);
+                projects[index] = {
+                    ...projectData,
+                    savedDate: new Date().toISOString() // Update the saved date
+                };
+            } else {
+                // Check if we're at the limit
+                if (projects.length >= MAX_PROJECTS) {
+                    showError(`Cannot import. Maximum of ${MAX_PROJECTS} projects reached. Please delete a project first.`);
+                    return;
+                }
+                projects.push({
+                    ...projectData,
+                    savedDate: new Date().toISOString()
+                });
+            }
+
+            localStorage.setItem('revisionToolProjects', JSON.stringify(projects));
+            showDataStatus(`Project "${projectData.name}" imported successfully ✓`);
+
+            // Refresh the manage projects list
+            refreshManageProjectsList();
+
+        } catch (error) {
+            showError('Error reading .bro file: ' + error.message);
+        }
+    };
+
+    reader.onerror = function() {
+        showError('Error reading file');
+    };
+
+    reader.readAsText(file);
+}
+
+// ===== END .BRO FILE IMPORT/EXPORT FUNCTIONS =====
+
 // ===== END PROJECT MANAGEMENT FUNCTIONS =====
 
 function clearAllData() {
-    if (confirm('Clear all saved data? This will remove your saved files, annotations, and session state.\n\nNote: Saved projects will NOT be deleted. Use the "Manage Projects" option to delete individual projects.')) {
+    if (confirm('Clear all saved data? This will remove your saved files, annotations, feedback, and session state.\n\nNote: Saved projects will NOT be deleted. Use the "Manage Projects" option to delete individual projects.')) {
         localStorage.removeItem('revisionToolState');
         localStorage.removeItem('revisionToolFiles');
         localStorage.removeItem('revisionAnnotations');
+        localStorage.removeItem('revisionDraftFeedback');
         annotations = {};
+        draftFeedback = {};
         savedState = null;
         showDataStatus('All data cleared ✓');
 
@@ -5324,6 +5580,7 @@ function generatePrintableContent() {
     const includeAllDrafts = document.getElementById('includeAllDrafts').checked;
     const includeCurrentOnly = document.getElementById('includeCurrentOnly').checked;
     const includeAnnotations = document.getElementById('includeAnnotations').checked;
+    const includeFeedback = document.getElementById('includeFeedback').checked;
     const includeLegend = document.getElementById('includeLegend').checked;
     
     const printableDiv = document.getElementById('printableContent');
@@ -5346,7 +5603,7 @@ function generatePrintableContent() {
         const currentPanelInfo = panelInfo[currentPosition];
         
         if (currentPanelInfo.type === 'draft') {
-            html += generateDraftForPrint(currentEssay.drafts[currentPanelInfo.index], true);
+            html += generateDraftForPrint(currentEssay.drafts[currentPanelInfo.index], true, includeFeedback);
         } else if (currentPanelInfo.type === 'diff') {
             html += generateDiffForPrint(
                 currentEssay.drafts[currentPanelInfo.fromIndex],
@@ -5365,7 +5622,7 @@ function generatePrintableContent() {
         panelInfo.forEach((info, index) => {
             const isFirstPage = index === 0;
             if (info.type === 'draft') {
-                html += generateDraftForPrint(currentEssay.drafts[info.index], isFirstPage);
+                html += generateDraftForPrint(currentEssay.drafts[info.index], isFirstPage, includeFeedback);
             } else if (info.type === 'diff') {
                 html += generateDiffForPrint(
                     currentEssay.drafts[info.fromIndex],
@@ -5475,9 +5732,9 @@ function generateDiffForPrint(fromDraft, toDraft, panelElement, includeAnnotatio
     return html;
 }
 
-function generateDraftForPrint(draft, isFirstPage = false) {
+function generateDraftForPrint(draft, isFirstPage = false, includeFeedback = false) {
     let html = `<div class="print-page">`;
-    
+
     // Add document title only on first page
     if (isFirstPage && currentEssay) {
         html += `
@@ -5487,15 +5744,35 @@ function generateDraftForPrint(draft, isFirstPage = false) {
             </div>
         `;
     }
-    
+
     html += `
             <div class="print-page-header">${draft.version}</div>
             <div class="print-main-content" style="width: 100%;">
                 ${formatText(draft.text)}
             </div>
-        </div>
     `;
-    
+
+    // Add feedback as footnote if available
+    if (includeFeedback && currentEssay) {
+        const feedbackId = getFeedbackId(currentEssay.title, draft.version);
+        const feedback = draftFeedback[feedbackId];
+
+        if (feedback) {
+            html += `
+                <div style="margin-top: 30px; padding-top: 15px; border-top: 2px solid #6b2d8f; page-break-inside: avoid;">
+                    <div style="font-size: 9pt; font-weight: bold; color: #6b2d8f; margin-bottom: 8px;">
+                        📝 Instructor/Classmate Feedback:
+                    </div>
+                    <div style="font-size: 9pt; line-height: 1.6; color: #333; white-space: pre-wrap; padding: 10px; background: #f5f3f8; border-left: 3px solid #6b2d8f; border-radius: 3px;">
+                        ${feedback.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    html += `</div>`;
+
     return html;
 }
 function getAnnotationsForDiff(fromDraft, toDraft) {
@@ -6698,6 +6975,9 @@ function generateRevisionReport() {
         document.getElementById('reportContent').innerHTML = generateTableView(analysis);
     }
 }
+
+
+    
 
     </script>
 </body>
