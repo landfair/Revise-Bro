@@ -1490,6 +1490,226 @@
 
 
 
+/* Feedback Button Styles */
+.feedback-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+    z-index: 10;
+}
+
+.feedback-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.feedback-button:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+.feedback-button.has-feedback {
+    font-size: 26px;
+}
+
+.feedback-modal-content {
+    background-color: var(--modal-background);
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    width: 90%;
+    max-width: 600px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    color: var(--text-color);
+}
+
+.feedback-modal-content h3 {
+    color: var(--primary-dark);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.feedback-modal-content textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 15px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    resize: vertical;
+    background-color: var(--input-background);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.feedback-modal-content textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(107, 45, 143, 0.1);
+}
+
+.feedback-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+}
+
+.feedback-save-btn, .feedback-cancel-btn, .feedback-delete-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition-base);
+}
+
+.feedback-save-btn {
+    background: var(--primary-gradient);
+    color: white;
+    flex: 1;
+}
+
+.feedback-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.feedback-cancel-btn {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+}
+
+.feedback-cancel-btn:hover {
+    background: var(--accent-purple-lightest);
+    border-color: var(--primary-color);
+    color: var(--text-primary);
+}
+
+.feedback-delete-btn {
+    background: transparent;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.feedback-delete-btn:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.feedback-display {
+    background: var(--diff-legend-bg);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--primary-color);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.feedback-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Project Management Styles */
+.project-item {
+    background: var(--card-background);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.project-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.project-item-info {
+    flex: 1;
+}
+
+.project-item-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.project-item-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.project-item-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.project-load-btn, .project-delete-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition-base);
+}
+
+.project-load-btn {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.project-load-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.project-delete-btn {
+    background: transparent;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.project-delete-btn:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.no-projects-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
 /* Data Management Styles */
 .data-manager {
     position: fixed;
@@ -2243,6 +2463,8 @@
                     <button class="dropdown-item" id="restartLandingTourBtn">Take Tour</button>
                     <button class="dropdown-item" id="nightModeToggle">Night Mode: <span id="nightModeStatus">Off</span></button>
                     <a href="https://docs.google.com/forms/d/e/1FAIpQLSfjLT0XMpp4k__8cgiwBS2_JTZnrRKPRXDktcvcdgH8fYSDTA/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="dropdown-item">Report a Bug</a>
+                    <button class="dropdown-item" id="saveProjectButton">Save Project</button>
+                    <button class="dropdown-item" id="loadProjectButton">Load Project</button>
                     <button class="dropdown-item dropdown-item-danger" id="clearDataButton">Clear Data</button>
                 </div>
             </div>
@@ -2479,7 +2701,13 @@
             <label for="includeAnnotations">Include annotations</label>
             <div class="pdf-option-description">Add your annotation notes to the exported document</div>
         </div>
-        
+
+        <div class="pdf-option" onclick="document.getElementById('includeFeedback').click()">
+            <input type="checkbox" id="includeFeedback" checked>
+            <label for="includeFeedback">Include feedback</label>
+            <div class="pdf-option-description">Add instructor/classmate feedback as footnotes on each draft</div>
+        </div>
+
         <div class="pdf-option" onclick="document.getElementById('includeLegend').click()">
             <input type="checkbox" id="includeLegend" >
             <label for="includeLegend">Include color legend</label>
@@ -2511,6 +2739,70 @@
 
 <!-- Hidden printable content area -->
 <div id="printableContent" style="display: none;"></div>
+
+<!-- Save Project Modal -->
+<div id="saveProjectModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <span class="modal-close" id="saveProjectModalClose">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 20px;">Save Project</h2>
+        <p style="margin-bottom: 20px; color: var(--text-secondary);">Give your project a name to save all drafts and annotations.</p>
+        <input type="text" id="projectNameInput" placeholder="Enter project name..."
+            style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px;
+            font-size: 1rem; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="annotation-cancel-btn" id="cancelSaveProjectBtn">Cancel</button>
+            <button class="annotation-save-btn" id="confirmSaveProjectBtn">Save Project</button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Project Modal -->
+<div id="loadProjectModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <span class="modal-close" id="loadProjectModalClose">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 20px;">Load Project</h2>
+        <p style="margin-bottom: 20px; color: var(--text-secondary);">Select a saved project to load.</p>
+        <div id="projectsList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
+            <!-- Projects will be listed here -->
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 15px;">
+            <button class="annotation-cancel-btn" id="manageProjectsFromLoadBtn">Manage Projects</button>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Projects Modal (when limit reached) -->
+<div id="manageProjectsModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <span class="modal-close" id="manageProjectsModalClose">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 10px;">Manage Projects</h2>
+        <p id="projectCountMessage" style="margin-bottom: 20px; color: var(--text-secondary); font-weight: 600;">
+            <!-- Count will be shown here -->
+        </p>
+        <div id="manageProjectsList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
+            <!-- Projects will be listed here with delete buttons -->
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: space-between;">
+            <button class="annotation-save-btn" id="backToSaveFromManageBtn" style="display: none;">Save New Project</button>
+            <button class="annotation-cancel-btn" id="cancelManageProjectsBtn">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback Modal -->
+<div id="feedbackModal" class="modal">
+    <div class="feedback-modal-content">
+        <span class="modal-close" id="feedbackModalClose">&times;</span>
+        <h3 id="feedbackModalTitle">Add Feedback</h3>
+        <label class="feedback-label">Enter feedback received from your instructor or classmates:</label>
+        <textarea id="feedbackTextarea" placeholder="Type your feedback here..."></textarea>
+        <div class="feedback-buttons">
+            <button class="feedback-delete-btn" id="feedbackDeleteBtn" style="display: none;">Delete</button>
+            <button class="feedback-cancel-btn" id="feedbackCancelBtn">Cancel</button>
+            <button class="feedback-save-btn" id="feedbackSaveBtn">Save</button>
+        </div>
+    </div>
+</div>
 
 <!-- Data Manager -->
 <div class="data-manager">
@@ -3166,8 +3458,20 @@ Barwich's view of failure as a kind of "epistemic" disturbance—what she calls 
                 // Add draft panel
                 const draftPanel = document.createElement('div');
                 draftPanel.className = 'panel';
+                draftPanel.style.position = 'relative'; // For absolute positioning of feedback button
                 const formattedText = formatText(essay.drafts[i].text);
+
+                // Check if feedback exists for this draft
+                const feedbackId = getFeedbackId(essay.title, essay.drafts[i].version);
+                const hasFeedback = draftFeedback[feedbackId] !== undefined;
+                const feedbackIcon = hasFeedback ? '🍎' : '+';
+                const feedbackClass = hasFeedback ? 'has-feedback' : '';
+
                 draftPanel.innerHTML = `
+                    <button class="feedback-button ${feedbackClass}"
+                            onclick="showFeedbackModal('${essay.title.replace(/'/g, "\\'")}', '${essay.drafts[i].version.replace(/'/g, "\\'")}')">
+                        ${feedbackIcon}
+                    </button>
                     <h3>${essay.drafts[i].version}</h3>
                     <div class="panel-content">${formattedText}</div>
                 `;
@@ -3424,7 +3728,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
      // Load saved data
      loadAnnotations();
-    
+     loadDraftFeedback();
+
     // Show restore banner if there's saved data
     showRestoreBanner();
     
@@ -3435,7 +3740,120 @@ document.addEventListener('DOMContentLoaded', function() {
     if (clearDataButton) {
         clearDataButton.addEventListener('click', clearAllData);
     }
-  
+
+    // Project Management Buttons
+    const saveProjectButton = document.getElementById('saveProjectButton');
+    const loadProjectButton = document.getElementById('loadProjectButton');
+
+    if (saveProjectButton) {
+        saveProjectButton.addEventListener('click', showSaveProjectModal);
+    }
+
+    if (loadProjectButton) {
+        loadProjectButton.addEventListener('click', showLoadProjectModal);
+    }
+
+    // Save Project Modal Events
+    const saveProjectModal = document.getElementById('saveProjectModal');
+    const saveProjectModalClose = document.getElementById('saveProjectModalClose');
+    const cancelSaveProjectBtn = document.getElementById('cancelSaveProjectBtn');
+    const confirmSaveProjectBtn = document.getElementById('confirmSaveProjectBtn');
+    const projectNameInput = document.getElementById('projectNameInput');
+
+    if (saveProjectModalClose) {
+        saveProjectModalClose.addEventListener('click', function() {
+            saveProjectModal.style.display = 'none';
+        });
+    }
+
+    if (cancelSaveProjectBtn) {
+        cancelSaveProjectBtn.addEventListener('click', function() {
+            saveProjectModal.style.display = 'none';
+        });
+    }
+
+    if (confirmSaveProjectBtn) {
+        confirmSaveProjectBtn.addEventListener('click', attemptSaveProject);
+    }
+
+    if (projectNameInput) {
+        projectNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                attemptSaveProject();
+            }
+        });
+    }
+
+    // Load Project Modal Events
+    const loadProjectModal = document.getElementById('loadProjectModal');
+    const loadProjectModalClose = document.getElementById('loadProjectModalClose');
+    const manageProjectsFromLoadBtn = document.getElementById('manageProjectsFromLoadBtn');
+
+    if (loadProjectModalClose) {
+        loadProjectModalClose.addEventListener('click', function() {
+            loadProjectModal.style.display = 'none';
+        });
+    }
+
+    if (manageProjectsFromLoadBtn) {
+        manageProjectsFromLoadBtn.addEventListener('click', function() {
+            loadProjectModal.style.display = 'none';
+            showManageProjectsModal();
+        });
+    }
+
+    // Manage Projects Modal Events
+    const manageProjectsModal = document.getElementById('manageProjectsModal');
+    const manageProjectsModalClose = document.getElementById('manageProjectsModalClose');
+    const cancelManageProjectsBtn = document.getElementById('cancelManageProjectsBtn');
+    const backToSaveFromManageBtn = document.getElementById('backToSaveFromManageBtn');
+
+    if (manageProjectsModalClose) {
+        manageProjectsModalClose.addEventListener('click', function() {
+            manageProjectsModal.style.display = 'none';
+        });
+    }
+
+    if (cancelManageProjectsBtn) {
+        cancelManageProjectsBtn.addEventListener('click', function() {
+            manageProjectsModal.style.display = 'none';
+        });
+    }
+
+    if (backToSaveFromManageBtn) {
+        backToSaveFromManageBtn.addEventListener('click', function() {
+            manageProjectsModal.style.display = 'none';
+            showSaveProjectModal();
+        });
+    }
+
+    // Feedback Modal Events
+    const feedbackModal = document.getElementById('feedbackModal');
+    const feedbackModalClose = document.getElementById('feedbackModalClose');
+    const feedbackSaveBtn = document.getElementById('feedbackSaveBtn');
+    const feedbackCancelBtn = document.getElementById('feedbackCancelBtn');
+    const feedbackDeleteBtn = document.getElementById('feedbackDeleteBtn');
+
+    if (feedbackModalClose) {
+        feedbackModalClose.addEventListener('click', function() {
+            feedbackModal.style.display = 'none';
+        });
+    }
+
+    if (feedbackSaveBtn) {
+        feedbackSaveBtn.addEventListener('click', saveFeedbackFromModal);
+    }
+
+    if (feedbackCancelBtn) {
+        feedbackCancelBtn.addEventListener('click', function() {
+            feedbackModal.style.display = 'none';
+        });
+    }
+
+    if (feedbackDeleteBtn) {
+        feedbackDeleteBtn.addEventListener('click', deleteFeedbackFromModal);
+    }
+
 // Options Dropdown Toggle
 const optionsDropdownBtn = document.getElementById('optionsDropdownBtn');
     const optionsDropdownMenu = document.getElementById('optionsDropdownMenu');
@@ -3515,6 +3933,24 @@ if (quotesModalClose) {
 window.addEventListener('click', function(event) {
     if (event.target === quotesModal) {
         quotesModal.style.display = 'none';
+    }
+    // Project modals
+    const saveProjectModal = document.getElementById('saveProjectModal');
+    const loadProjectModal = document.getElementById('loadProjectModal');
+    const manageProjectsModal = document.getElementById('manageProjectsModal');
+    const feedbackModal = document.getElementById('feedbackModal');
+
+    if (event.target === saveProjectModal) {
+        saveProjectModal.style.display = 'none';
+    }
+    if (event.target === loadProjectModal) {
+        loadProjectModal.style.display = 'none';
+    }
+    if (event.target === manageProjectsModal) {
+        manageProjectsModal.style.display = 'none';
+    }
+    if (event.target === feedbackModal) {
+        feedbackModal.style.display = 'none';
     }
 });
 
@@ -3972,6 +4408,7 @@ observer.observe(document.getElementById('comparisonResults'), {
 
 // Enhanced Data Persistence System
 let annotations = {};
+let draftFeedback = {}; // Store feedback for each draft
 let savedState = null;
 
 // Save state to localStorage
@@ -4072,6 +4509,109 @@ function saveAnnotations() {
         console.error('Error saving annotations:', e);
     }
 }
+
+// ===== DRAFT FEEDBACK FUNCTIONS =====
+
+// Generate unique ID for feedback based on essay and draft
+function getFeedbackId(essayTitle, draftVersion) {
+    return `${essayTitle}|${draftVersion}`;
+}
+
+// Load feedback from localStorage
+function loadDraftFeedback() {
+    try {
+        const stored = localStorage.getItem('revisionDraftFeedback');
+        if (stored) {
+            draftFeedback = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error('Error loading feedback:', e);
+        draftFeedback = {};
+    }
+}
+
+// Save feedback to localStorage
+function saveDraftFeedback() {
+    try {
+        localStorage.setItem('revisionDraftFeedback', JSON.stringify(draftFeedback));
+        showDataStatus('Feedback saved ✓');
+    } catch (e) {
+        console.error('Error saving feedback:', e);
+    }
+}
+
+// Show feedback modal for a draft
+let currentFeedbackId = null;
+
+function showFeedbackModal(essayTitle, draftVersion) {
+    currentFeedbackId = getFeedbackId(essayTitle, draftVersion);
+    const modal = document.getElementById('feedbackModal');
+    const modalTitle = document.getElementById('feedbackModalTitle');
+    const textarea = document.getElementById('feedbackTextarea');
+    const deleteBtn = document.getElementById('feedbackDeleteBtn');
+
+    // Check if feedback exists
+    const existingFeedback = draftFeedback[currentFeedbackId];
+
+    if (existingFeedback) {
+        modalTitle.textContent = 'View/Edit Feedback';
+        textarea.value = existingFeedback;
+        deleteBtn.style.display = 'block';
+    } else {
+        modalTitle.textContent = 'Add Feedback';
+        textarea.value = '';
+        deleteBtn.style.display = 'none';
+    }
+
+    modal.style.display = 'block';
+    textarea.focus();
+}
+
+// Save feedback from modal
+function saveFeedbackFromModal() {
+    const textarea = document.getElementById('feedbackTextarea');
+    const feedbackText = textarea.value.trim();
+
+    if (!feedbackText) {
+        showError('Please enter some feedback');
+        return;
+    }
+
+    draftFeedback[currentFeedbackId] = feedbackText;
+    saveDraftFeedback();
+
+    // Close modal
+    document.getElementById('feedbackModal').style.display = 'none';
+
+    // Refresh panels to update button icon
+    if (currentEssay) {
+        const panelInfo = createPanels(currentEssay);
+        updateSliderPosition();
+        updateNavigationInfo(panelInfo);
+    }
+}
+
+// Delete feedback
+function deleteFeedbackFromModal() {
+    if (!confirm('Delete this feedback?')) {
+        return;
+    }
+
+    delete draftFeedback[currentFeedbackId];
+    saveDraftFeedback();
+
+    // Close modal
+    document.getElementById('feedbackModal').style.display = 'none';
+
+    // Refresh panels to update button icon
+    if (currentEssay) {
+        const panelInfo = createPanels(currentEssay);
+        updateSliderPosition();
+        updateNavigationInfo(panelInfo);
+    }
+}
+
+// ===== END DRAFT FEEDBACK FUNCTIONS =====
 
 // Show data status message
 function showDataStatus(message, isError = false) {
@@ -4235,15 +4775,233 @@ window.removeRestoredFile = function(fileName) {
 };
 
 // Clear all saved data
+// ===== PROJECT MANAGEMENT FUNCTIONS =====
+
+const MAX_PROJECTS = 5;
+
+function getProjects() {
+    const projectsData = localStorage.getItem('revisionToolProjects');
+    return projectsData ? JSON.parse(projectsData) : [];
+}
+
+function saveProject(projectName) {
+    if (!projectName || projectName.trim() === '') {
+        showError('Please enter a project name');
+        return false;
+    }
+
+    if (!currentEssay) {
+        showError('No drafts loaded to save');
+        return false;
+    }
+
+    const projects = getProjects();
+
+    // Check if project name already exists
+    const existingIndex = projects.findIndex(p => p.name === projectName);
+
+    const projectData = {
+        name: projectName,
+        savedDate: new Date().toISOString(),
+        essay: currentEssay,
+        annotations: annotations,
+        feedback: draftFeedback,
+        uploadedFiles: uploadedFiles.map(file => ({
+            name: file.name,
+            type: file.type,
+            lastModified: file.lastModified
+        }))
+    };
+
+    if (existingIndex >= 0) {
+        // Update existing project
+        projects[existingIndex] = projectData;
+        showDataStatus(`Project "${projectName}" updated ✓`);
+    } else {
+        // Add new project
+        if (projects.length >= MAX_PROJECTS) {
+            return false; // Will trigger manage projects modal
+        }
+        projects.push(projectData);
+        showDataStatus(`Project "${projectName}" saved ✓`);
+    }
+
+    localStorage.setItem('revisionToolProjects', JSON.stringify(projects));
+    return true;
+}
+
+function loadProject(projectName) {
+    const projects = getProjects();
+    const project = projects.find(p => p.name === projectName);
+
+    if (!project) {
+        showError('Project not found');
+        return;
+    }
+
+    // Load the project data
+    currentEssay = project.essay;
+    annotations = project.annotations || {};
+    draftFeedback = project.feedback || {};
+
+    // Recreate the comparison view
+    const panelInfo = createPanels(currentEssay);
+    totalPanels = panelInfo.length;
+    currentPosition = 0;
+
+    // Hide upload section and show results
+    const uploadSection = document.querySelector('.upload-section');
+    if (uploadSection) uploadSection.classList.add('hidden');
+
+    const comparisonResults = document.getElementById('comparisonResults');
+    comparisonResults.style.display = 'block';
+    updateSliderPosition();
+    updateNavigationInfo(panelInfo);
+    setupNewComparisonButton();
+
+    // Display annotations
+    displayAnnotations();
+
+    showDataStatus(`Project "${projectName}" loaded ✓`);
+
+    // Save to current state as well
+    saveState();
+}
+
+function deleteProject(projectName) {
+    if (!confirm(`Delete project "${projectName}"? This cannot be undone.`)) {
+        return;
+    }
+
+    const projects = getProjects();
+    const filteredProjects = projects.filter(p => p.name !== projectName);
+
+    localStorage.setItem('revisionToolProjects', JSON.stringify(filteredProjects));
+    showDataStatus(`Project "${projectName}" deleted`);
+
+    // Refresh the projects list if modal is open
+    refreshProjectsList();
+    refreshManageProjectsList();
+}
+
+function showSaveProjectModal() {
+    const projects = getProjects();
+
+    // Check if limit reached
+    if (projects.length >= MAX_PROJECTS) {
+        showManageProjectsModal();
+        return;
+    }
+
+    const modal = document.getElementById('saveProjectModal');
+    modal.style.display = 'block';
+    document.getElementById('projectNameInput').value = '';
+    document.getElementById('projectNameInput').focus();
+}
+
+function showLoadProjectModal() {
+    const modal = document.getElementById('loadProjectModal');
+    modal.style.display = 'block';
+    refreshProjectsList();
+}
+
+function showManageProjectsModal() {
+    const modal = document.getElementById('manageProjectsModal');
+    modal.style.display = 'block';
+    refreshManageProjectsList();
+}
+
+function refreshProjectsList() {
+    const projectsList = document.getElementById('projectsList');
+    const projects = getProjects();
+
+    if (projects.length === 0) {
+        projectsList.innerHTML = '<div class="no-projects-message">No saved projects yet.</div>';
+        return;
+    }
+
+    projectsList.innerHTML = projects.map(project => `
+        <div class="project-item" data-project-name="${project.name}">
+            <div class="project-item-info">
+                <div class="project-item-name">${project.name}</div>
+                <div class="project-item-date">Saved: ${new Date(project.savedDate).toLocaleString()}</div>
+            </div>
+            <div class="project-item-actions">
+                <button class="project-load-btn" onclick="loadProjectFromList('${project.name.replace(/'/g, "\\'")}')">Load</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function refreshManageProjectsList() {
+    const projectsList = document.getElementById('manageProjectsList');
+    const projectCountMessage = document.getElementById('projectCountMessage');
+    const backToSaveBtn = document.getElementById('backToSaveFromManageBtn');
+    const projects = getProjects();
+
+    // Update count message
+    if (projectCountMessage) {
+        const remaining = MAX_PROJECTS - projects.length;
+        if (projects.length >= MAX_PROJECTS) {
+            projectCountMessage.innerHTML = `<span style="color: #dc3545;">⚠️ Maximum of ${MAX_PROJECTS} projects reached. Delete a project to save new ones.</span>`;
+        } else {
+            projectCountMessage.innerHTML = `You have ${projects.length} of ${MAX_PROJECTS} projects saved. ${remaining} slot${remaining !== 1 ? 's' : ''} remaining.`;
+        }
+    }
+
+    // Show/hide "Save New Project" button based on whether we have space
+    if (backToSaveBtn) {
+        backToSaveBtn.style.display = projects.length < MAX_PROJECTS ? 'block' : 'none';
+    }
+
+    projectsList.innerHTML = projects.map(project => `
+        <div class="project-item" data-project-name="${project.name}">
+            <div class="project-item-info">
+                <div class="project-item-name">${project.name}</div>
+                <div class="project-item-date">Saved: ${new Date(project.savedDate).toLocaleString()}</div>
+            </div>
+            <div class="project-item-actions">
+                <button class="project-delete-btn" onclick="deleteProject('${project.name.replace(/'/g, "\\'")}')">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadProjectFromList(projectName) {
+    const modal = document.getElementById('loadProjectModal');
+    modal.style.display = 'none';
+    loadProject(projectName);
+}
+
+function attemptSaveProject() {
+    const projectName = document.getElementById('projectNameInput').value.trim();
+    const projects = getProjects();
+
+    // Check if we're at the limit and it's a new project
+    const existingProject = projects.find(p => p.name === projectName);
+    if (!existingProject && projects.length >= MAX_PROJECTS) {
+        document.getElementById('saveProjectModal').style.display = 'none';
+        showManageProjectsModal();
+        return;
+    }
+
+    const success = saveProject(projectName);
+    if (success) {
+        document.getElementById('saveProjectModal').style.display = 'none';
+    }
+}
+
+// ===== END PROJECT MANAGEMENT FUNCTIONS =====
+
 function clearAllData() {
-    if (confirm('Clear all saved data? This will remove your saved files, annotations, and session state.')) {
+    if (confirm('Clear all saved data? This will remove your saved files, annotations, and session state.\n\nNote: Saved projects will NOT be deleted. Use the "Manage Projects" option to delete individual projects.')) {
         localStorage.removeItem('revisionToolState');
         localStorage.removeItem('revisionToolFiles');
         localStorage.removeItem('revisionAnnotations');
         annotations = {};
         savedState = null;
         showDataStatus('All data cleared ✓');
-        
+
         // Reload page
         setTimeout(() => {
             window.location.reload();
@@ -5940,9 +6698,6 @@ function generateRevisionReport() {
         document.getElementById('reportContent').innerHTML = generateTableView(analysis);
     }
 }
-
-
-    
 
     </script>
 </body>
