@@ -2932,6 +2932,21 @@
 
 
     <!-- About Modal -->
+    <!-- Restore Session Modal -->
+    <div id="restoreSessionModal" class="modal" style="display: flex; align-items: center; justify-content: center;">
+        <div class="modal-content" style="max-width: 450px; width: 90%; padding: 25px; margin: 0;">
+            <span class="modal-close" id="restoreSessionModalClose">&times;</span>
+            <h2 style="color: var(--primary-dark); margin: 0 0 10px 0; font-size: 1.3rem;">
+                🔄 Resume Previous Session?
+            </h2>
+            <p id="restoreSessionMessage" style="margin: 0 0 15px 0; color: var(--text-secondary); line-height: 1.5;"></p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <button class="annotation-cancel-btn" id="startFreshBtn">Start Fresh</button>
+                <button class="annotation-save-btn" id="restoreSessionBtn">Restore Session</button>
+            </div>
+        </div>
+    </div>
+
     <div id="aboutModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="aboutModalClose">&times;</span>
@@ -4768,18 +4783,14 @@ function showDataStatus(message, isError = false) {
     }, 3000);
 }
 
-// Show restore banner
+// Show restore modal
 function showRestoreBanner() {
     const state = loadState();
     const files = loadFileContents();
-    
+
     if (!state && !files) return;
-    
-    const container = document.querySelector('.container');
-    const banner = document.createElement('div');
-    banner.className = 'restore-banner';
-    banner.id = 'restoreBanner';
-    
+
+    // Build message
     let message = 'Previous session found! ';
     if (state && state.currentEssay) {
         const date = new Date(state.timestamp).toLocaleString();
@@ -4787,27 +4798,45 @@ function showRestoreBanner() {
     } else if (files) {
         message += `You have ${files.length} saved file(s).`;
     }
-    
-    banner.innerHTML = `
-        <h4>🔄 Resume Previous Session?</h4>
-        <p>${message}</p>
-        <div class="restore-banner-buttons">
-            <button class="restore-btn" id="restoreSession">Restore Session</button>
-            <button class="dismiss-btn" id="dismissRestore">Start Fresh</button>
-        </div>
-    `;
-    
-    container.insertBefore(banner, container.firstChild);
-    
+
+    // Update modal message and show it
+    const modal = document.getElementById('restoreSessionModal');
+    const messageEl = document.getElementById('restoreSessionMessage');
+    messageEl.textContent = message;
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+
     // Restore button
-    document.getElementById('restoreSession').addEventListener('click', async function() {
+    const restoreBtn = document.getElementById('restoreSessionBtn');
+    const newRestoreBtn = restoreBtn.cloneNode(true);
+    restoreBtn.parentNode.replaceChild(newRestoreBtn, restoreBtn);
+    newRestoreBtn.addEventListener('click', async function() {
         await restoreSession();
-        banner.remove();
+        modal.style.display = 'none';
     });
-    
-    // Dismiss button
-    document.getElementById('dismissRestore').addEventListener('click', function() {
-        banner.remove();
+
+    // Start fresh button
+    const startFreshBtn = document.getElementById('startFreshBtn');
+    const newStartFreshBtn = startFreshBtn.cloneNode(true);
+    startFreshBtn.parentNode.replaceChild(newStartFreshBtn, startFreshBtn);
+    newStartFreshBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    // Close button
+    const closeBtn = document.getElementById('restoreSessionModalClose');
+    const newCloseBtn = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+    newCloseBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    // Close on outside click
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
     });
 }
 
@@ -5811,36 +5840,62 @@ function getPanelInfo() {
     const slider = document.getElementById('comparisonSlider');
     const panels = Array.from(slider.children);
     const panelInfo = [];
-    
-    let draftIndex = 0;
-    for (let i = 0; i < panels.length; i++) {
-        if (i % 2 === 0) {
-            panelInfo.push({ type: 'draft', index: draftIndex });
-            draftIndex++;
-        } else {
-            panelInfo.push({ type: 'diff', fromIndex: draftIndex - 1, toIndex: draftIndex });
-        }
-    }
-    
-    return panelInfo;
-}
 
-// Helper function to get panel info
-function getPanelInfo() {
-    const slider = document.getElementById('comparisonSlider');
-    const panels = Array.from(slider.children);
-    const panelInfo = [];
-    
+    // Build a map of draft versions to indices
+    const versionToIndex = new Map();
+    if (currentEssay && currentEssay.drafts) {
+        currentEssay.drafts.forEach((draft, index) => {
+            versionToIndex.set(draft.version, index);
+        });
+    }
+
     let draftIndex = 0;
     for (let i = 0; i < panels.length; i++) {
-        if (i % 2 === 0) {
+        const panel = panels[i];
+
+        // Check if this is a diff panel by looking for the 'diff-panel' class
+        if (panel.classList.contains('diff-panel')) {
+            // This is a diff panel - extract version info from heading
+            const heading = panel.querySelector('h3');
+            const headingText = heading ? heading.textContent : '';
+
+            // Check if this is a Complete Transformation panel
+            if (headingText.includes('Complete Transformation')) {
+                // Extract version names from "Complete Transformation: Version1 → Version2"
+                const match = headingText.match(/Complete Transformation:\s*(.+?)\s*→\s*(.+)/);
+                if (match && currentEssay && currentEssay.drafts) {
+                    const fromVersion = match[1].trim();
+                    const toVersion = match[2].trim();
+                    const fromIndex = versionToIndex.get(fromVersion) ?? 0;
+                    const toIndex = versionToIndex.get(toVersion) ?? (currentEssay.drafts.length - 1);
+                    panelInfo.push({ type: 'diff', fromIndex, toIndex });
+                } else {
+                    // Fallback: first to last draft
+                    const fromIndex = 0;
+                    const toIndex = currentEssay ? currentEssay.drafts.length - 1 : 0;
+                    panelInfo.push({ type: 'diff', fromIndex, toIndex });
+                }
+            } else {
+                // Regular diff panel - extract versions from "Changes: Version1 → Version2"
+                const match = headingText.match(/Changes:\s*(.+?)\s*→\s*(.+)/);
+                if (match && currentEssay && currentEssay.drafts) {
+                    const fromVersion = match[1].trim();
+                    const toVersion = match[2].trim();
+                    const fromIndex = versionToIndex.get(fromVersion) ?? (draftIndex - 1);
+                    const toIndex = versionToIndex.get(toVersion) ?? draftIndex;
+                    panelInfo.push({ type: 'diff', fromIndex, toIndex });
+                } else {
+                    // Fallback to old logic for regular diff panels
+                    panelInfo.push({ type: 'diff', fromIndex: draftIndex - 1, toIndex: draftIndex });
+                }
+            }
+        } else {
+            // This is a draft panel
             panelInfo.push({ type: 'draft', index: draftIndex });
             draftIndex++;
-        } else {
-            panelInfo.push({ type: 'diff', fromIndex: draftIndex - 1, toIndex: draftIndex });
         }
     }
-    
+
     return panelInfo;
 }
 
