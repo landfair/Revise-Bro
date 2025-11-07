@@ -2036,15 +2036,50 @@
         vertical-align: super;
         font-size: 8pt;
     }
-    
-    /* Annotation in margin */
+
+    /* Inline annotations (appear next to edits) */
+    .inline-annotation {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 6px 10px;
+        background: #f9f9f9 !important;
+        border: 1px solid #666 !important;
+        border-radius: 4px;
+        font-size: 9pt;
+        line-height: 1.4;
+        vertical-align: middle;
+        max-width: 300px;
+        page-break-inside: avoid;
+    }
+
+    .inline-annotation-number {
+        display: inline-block;
+        border: 1.5px solid #000 !important;
+        background: white !important;
+        color: #000 !important;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        line-height: 16px;
+        text-align: center;
+        font-weight: bold;
+        margin-right: 6px;
+        font-size: 9pt;
+    }
+
+    .inline-annotation-content {
+        font-style: italic;
+        color: #333 !important;
+    }
+
+    /* Legacy margin annotation styles (kept for backwards compatibility) */
     .margin-annotation {
         margin-bottom: 20px;
         page-break-inside: avoid;
         font-size: 9pt;
         line-height: 1.4;
     }
-    
+
     .margin-annotation-number {
         display: inline-block;
         border: 2px solid #000 !important;
@@ -2059,12 +2094,12 @@
         margin-right: 8px;
         flex-shrink: 0;
     }
-    
+
     .margin-annotation-content {
         font-style: italic;
         color: #333 !important;
     }
-    
+
     .margin-annotation-text {
         font-size: 8pt;
         color: #666 !important;
@@ -2075,7 +2110,7 @@
         padding: 4px 6px;
         border-radius: 3px;
     }
-    
+
     .has-annotation {
         background-color: white !important;
         border-bottom: 2px solid #000 !important;
@@ -2933,7 +2968,7 @@
 
     <!-- About Modal -->
     <!-- Restore Session Modal -->
-    <div id="restoreSessionModal" class="modal" style="display: flex; align-items: center; justify-content: center;">
+    <div id="restoreSessionModal" class="modal" style="display: none; align-items: center; justify-content: center; z-index: 10000;">
         <div class="modal-content" style="max-width: 450px; width: 90%; padding: 25px; margin: 0;">
             <span class="modal-close" id="restoreSessionModalClose">&times;</span>
             <h2 style="color: var(--primary-dark); margin: 0 0 10px 0; font-size: 1.3rem;">
@@ -5816,42 +5851,57 @@ function generatePrintableContent() {
 }
 function generateDiffForPrint(fromDraft, toDraft, panelElement, includeAnnotations, isFirstPage = false) {
     // Get annotations for this diff
-    const relevantAnnotations = includeAnnotations ? 
+    const relevantAnnotations = includeAnnotations ?
         getAnnotationsForDiff(fromDraft.version, toDraft.version) : [];
-    
-    // Create a map of text to annotation number
-    const annotationMap = new Map();
-    relevantAnnotations.forEach(([id, data], index) => {
-        annotationMap.set(data.text, index + 1);
-    });
-    
-    // Get the diff content and add annotation references
+
+    // Get the diff content
     let diffContent = panelElement.querySelector('.panel-content').innerHTML;
-    
-    // Add reference numbers to annotated text
-    if (includeAnnotations) {
+
+    // Number annotations by their appearance order in the text (top to bottom)
+    const orderedAnnotations = [];
+
+    if (includeAnnotations && relevantAnnotations.length > 0) {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = diffContent;
-        
+
         const additions = tempDiv.querySelectorAll('.addition');
         const deletions = tempDiv.querySelectorAll('.deletion');
-        
-        [...additions, ...deletions].forEach(el => {
+
+        // Build a map of text content to annotation data
+        const textToAnnotation = new Map();
+        relevantAnnotations.forEach(([id, data]) => {
+            textToAnnotation.set(data.text, data);
+        });
+
+        // Get all annotatable elements (additions and deletions) in document order
+        const allElements = tempDiv.querySelectorAll('.addition, .deletion');
+
+        // Iterate through elements in document order and assign numbers
+        let annotationNumber = 1;
+        const annotationMap = new Map();
+
+        allElements.forEach(el => {
             const text = el.textContent;
-            const annotationNum = annotationMap.get(text);
-            if (annotationNum) {
-                el.innerHTML += `<span class="annotation-ref">${annotationNum}</span>`;
+            const annotationData = textToAnnotation.get(text);
+            if (annotationData && !annotationMap.has(text)) {
+                annotationMap.set(text, annotationNumber);
+
+                // Add reference number to the edited text
+                el.innerHTML += `<span class="annotation-ref">${annotationNumber}</span>`;
+
+                orderedAnnotations.push({ num: annotationNumber, data: annotationData });
+                annotationNumber++;
             }
         });
-        
+
         diffContent = tempDiv.innerHTML;
     }
-    
+
     // Build the HTML with two-column layout
     let html = `
         <div class="print-page">
     `;
-    
+
     // Add document title only on first page
     if (isFirstPage && currentEssay) {
         html += `
@@ -5861,33 +5911,33 @@ function generateDiffForPrint(fromDraft, toDraft, panelElement, includeAnnotatio
             </div>
         `;
     }
-    
+
     html += `
             <div class="print-page-header">
                 Changes: ${fromDraft.version} → ${toDraft.version}
             </div>
-            
+
             <div class="print-content-wrapper">
                 <div class="print-main-content">
                     ${diffContent}
                 </div>
-                
+
                 <div class="print-annotations-margin">
     `;
-    
-    // Add annotations to margin
-    if (includeAnnotations && relevantAnnotations.length > 0) {
+
+    // Add annotations to margin in order of appearance (at the top)
+    if (includeAnnotations && orderedAnnotations.length > 0) {
         html += '<div style="font-weight: bold; font-size: 10pt; margin-bottom: 15px; color: #000;">Revision Notes</div>';
-        
-        relevantAnnotations.forEach(([id, data], index) => {
-            const truncatedText = data.text.length > 60 ? 
-                data.text.substring(0, 60) + '...' : 
+
+        orderedAnnotations.forEach(({ num, data }) => {
+            const truncatedText = data.text.length > 60 ?
+                data.text.substring(0, 60) + '...' :
                 data.text;
-            
+
             html += `
                 <div class="margin-annotation">
                     <div style="display: flex; align-items: start;">
-                        <span class="margin-annotation-number">${index + 1}</span>
+                        <span class="margin-annotation-number">${num}</span>
                         <div style="flex: 1;">
                             <div class="margin-annotation-text">"${truncatedText}"</div>
                             <div class="margin-annotation-content">${data.note}</div>
@@ -5899,13 +5949,13 @@ function generateDiffForPrint(fromDraft, toDraft, panelElement, includeAnnotatio
     } else if (includeAnnotations) {
         html += '<div style="font-size: 9pt; color: #999; font-style: italic;">No annotations for this section</div>';
     }
-    
+
     html += `
                 </div>
             </div>
         </div>
     `;
-    
+
     return html;
 }
 
@@ -5963,19 +6013,19 @@ function getAnnotationsForDiff(fromDraft, toDraft) {
 function exportToPdf() {
     // Generate the content
     generatePrintableContent();
-    
+
     // Show the printable content temporarily
     const printableDiv = document.getElementById('printableContent');
     printableDiv.style.display = 'block';
-    
+
     // Close the modal
     document.getElementById('pdfOptionsModal').style.display = 'none';
-    
+
     // Small delay to ensure content is rendered
     setTimeout(() => {
         // Trigger print dialog
         window.print();
-        
+
         // Hide printable content after printing
         setTimeout(() => {
             printableDiv.style.display = 'none';
