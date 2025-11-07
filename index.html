@@ -3088,6 +3088,151 @@ function determineRevisionLevel(text) {
     }
 }
 
+// Fix broken words where DEL/INS splits happen in the middle of a word
+// Example: "act[ual][ive]ly" -> "[del:actually][ins:actively]"
+// Example: "[stalk][follow]ed" -> "[del:stalked][ins:followed]"
+// Example: "[t]he[i]r" -> "[del:her][ins:their]"
+function fixBrokenWords(diffs) {
+    const DIFF_DELETE = -1;
+    const DIFF_INSERT = 1;
+    const DIFF_EQUAL = 0;
+
+    let pointer = 0;
+
+    while (pointer < diffs.length) {
+        // Look for patterns: EQUAL-DELETE-INSERT or DELETE-INSERT-EQUAL
+
+        // Pattern 1: EQUAL-DELETE-INSERT (prefix case: "act[ual][ive]ly")
+        if (pointer > 0 &&
+            pointer < diffs.length - 1 &&
+            diffs[pointer][0] === DIFF_DELETE &&
+            diffs[pointer + 1][0] === DIFF_INSERT &&
+            diffs[pointer - 1][0] === DIFF_EQUAL) {
+
+            const prefix = diffs[pointer - 1][1];
+            const deletion = diffs[pointer][1];
+            const insertion = diffs[pointer + 1][1];
+
+            // Check if the equal part ends with word characters (could be part of the word)
+            const deletionMatch = deletion.match(/^(\w+)/);
+            const prefixMatch = prefix.match(/(\w+)$/);
+            if (deletionMatch && prefixMatch && prefixMatch[1].length > 0) {
+                const wordPrefix = prefixMatch[1];
+                const remainingPrefix = prefix.substring(0, prefix.length - wordPrefix.length);
+
+                // Move the word prefix into the deletion and insertion
+                diffs[pointer - 1][1] = remainingPrefix;
+                diffs[pointer][1] = wordPrefix + deletion;
+                diffs[pointer + 1][1] = wordPrefix + insertion;
+            }
+        }
+
+        // Pattern 2: DELETE-INSERT-EQUAL (suffix case: "[stalk][follow]ed")
+        if (pointer < diffs.length - 2 &&
+            diffs[pointer][0] === DIFF_DELETE &&
+            diffs[pointer + 1][0] === DIFF_INSERT &&
+            diffs[pointer + 2][0] === DIFF_EQUAL) {
+
+            const deletion = diffs[pointer][1];
+            const insertion = diffs[pointer + 1][1];
+            const suffix = diffs[pointer + 2][1];
+
+            // Check if the equal part starts with word characters (could be part of the word)
+            const suffixMatch = suffix.match(/^(\w+)/);
+            if (suffixMatch && suffixMatch[1].length > 0) {
+                const wordSuffix = suffixMatch[1];
+                const remainingSuffix = suffix.substring(wordSuffix.length);
+
+                // Move the word suffix into the deletion and insertion
+                diffs[pointer][1] = deletion + wordSuffix;
+                diffs[pointer + 1][1] = insertion + wordSuffix;
+                diffs[pointer + 2][1] = remainingSuffix;
+            }
+        }
+
+        // Pattern 3: INSERT-EQUAL-INSERT (middle word case: "[t]he[i]r")
+        if (pointer < diffs.length - 2 &&
+            diffs[pointer][0] === DIFF_INSERT &&
+            diffs[pointer + 1][0] === DIFF_EQUAL &&
+            diffs[pointer + 2][0] === DIFF_INSERT) {
+
+            const firstInsert = diffs[pointer][1];
+            const equalPart = diffs[pointer + 1][1];
+            const secondInsert = diffs[pointer + 2][1];
+
+            // Check if the equal part is entirely word characters (a complete word or part of one)
+            if (/^\w+$/.test(equalPart)) {
+                // Look backward to get trailing word characters from previous EQUAL
+                let prefixFromBefore = '';
+                let remainingBefore = '';
+                if (pointer > 0 && diffs[pointer - 1][0] === DIFF_EQUAL) {
+                    const beforeText = diffs[pointer - 1][1];
+                    const match = beforeText.match(/(\w+)$/);
+                    if (match) {
+                        prefixFromBefore = match[1];
+                        remainingBefore = beforeText.substring(0, beforeText.length - prefixFromBefore.length);
+                    } else {
+                        remainingBefore = beforeText;
+                    }
+                }
+
+                // Look forward to get leading word characters from next EQUAL
+                let suffixFromAfter = '';
+                let remainingAfter = '';
+                if (pointer + 3 < diffs.length && diffs[pointer + 3][0] === DIFF_EQUAL) {
+                    const afterText = diffs[pointer + 3][1];
+                    const match = afterText.match(/^(\w+)/);
+                    if (match) {
+                        suffixFromAfter = match[1];
+                        remainingAfter = afterText.substring(suffixFromAfter.length);
+                    } else {
+                        remainingAfter = afterText;
+                    }
+                }
+
+                // Build complete words
+                const originalWord = prefixFromBefore + equalPart + suffixFromAfter;
+                const newWord = prefixFromBefore + firstInsert + equalPart + secondInsert + suffixFromAfter;
+
+                // Update diffs array
+                // Add remaining before part if exists
+                if (pointer > 0 && diffs[pointer - 1][0] === DIFF_EQUAL && remainingBefore) {
+                    diffs[pointer - 1][1] = remainingBefore;
+                } else if (pointer > 0 && diffs[pointer - 1][0] === DIFF_EQUAL && !remainingBefore) {
+                    // Remove the empty before element later
+                    diffs[pointer - 1][1] = '';
+                }
+
+                // Replace INSERT-EQUAL-INSERT with DELETE-INSERT
+                diffs[pointer][0] = DIFF_DELETE;
+                diffs[pointer][1] = originalWord;
+                diffs[pointer + 1][0] = DIFF_INSERT;
+                diffs[pointer + 1][1] = newWord;
+
+                // Remove the second INSERT (it's now merged)
+                diffs.splice(pointer + 2, 1);
+
+                // Update or remove the after part if exists
+                if (pointer + 2 < diffs.length && diffs[pointer + 2][0] === DIFF_EQUAL) {
+                    if (remainingAfter) {
+                        diffs[pointer + 2][1] = remainingAfter;
+                    } else {
+                        diffs[pointer + 2][1] = '';
+                    }
+                }
+            }
+        }
+
+        pointer++;
+    }
+
+    // Clean up any empty diffs that may have been created
+    for (let i = diffs.length - 1; i >= 0; i--) {
+        if (diffs[i][1].length === 0) {
+            diffs.splice(i, 1);
+        }
+    }
+}
 
 function generateAdvancedDiff(text1, text2) {
     try {
@@ -3106,6 +3251,9 @@ function generateAdvancedDiff(text1, text2) {
         
         // Further cleanup - merge small changes with neighbors
         dmp.diff_cleanupEfficiency(diffs);
+        
+        // Custom cleanup: Fix broken words
+        fixBrokenWords(diffs);
         
         let html = '';
         
